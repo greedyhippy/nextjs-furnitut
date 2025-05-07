@@ -1,6 +1,6 @@
-query FetchCategory($path: String!) {
+query FetchCategory($path: String!, $limit: Int = 25, $skip: Int = 0) {
     browse {
-        category(path: $path) {
+        category(path: $path, pagination: { limit: $limit, skip: $skip }) {
             hits {
                 name
                 breadcrumbs {
@@ -13,8 +13,14 @@ query FetchCategory($path: String!) {
                 }
                 children {
                     hits {
-                        __typename
+                        shape
+                        ... on category {
+                            id
+                            name
+                            path
+                        }
                         ... on product {
+                            id
                             name
                             path
                             description(format: json)
@@ -51,6 +57,17 @@ query FetchCategory($path: String!) {
                     }
                 }
             }
+        }
+    }
+}
+
+query FetchItemShape($path: String!) {
+    search(path: $path) {
+        hits {
+            id
+            name
+            path
+            shape
         }
     }
 }
