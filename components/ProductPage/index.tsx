@@ -17,8 +17,8 @@ import { AddToCartButton } from '@/components/cart/add-to-cart-button';
 import { ParagraphCollection } from '@/components/paragraph-collection';
 
 type ProductsProps = {
-    searchParams: Promise<Record<string, string>>;
-    params: Promise<{ slug: string; category: string[]; }>;
+    searchParams: Promise<{ page?: string }>;
+    params: Promise<{ slug: string; category: string[] }>;
 };
 
 const fetchData = async (path: string) => {
