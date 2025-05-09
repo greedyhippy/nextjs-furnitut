@@ -2,7 +2,7 @@ import { print } from 'graphql';
 
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 
-const apiEndpoint = `https://api.crystallize.com/${process.env.CRYSTALLIZE_TENANT_IDENTIFIER}/discovery`;
+const apiEndpoint = `https://api.crystallize.com/${process.env.NEXT_PUBLIC_CRYSTALLIZE_TENANT_IDENTIFIER}/discovery`;
 
 export const apiRequest = async <TResult, TVariables = {}>(
     query: TypedDocumentNode<TResult, TVariables>,

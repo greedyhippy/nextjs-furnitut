@@ -44,7 +44,7 @@ export const MenuWrapper = ({ children }: MenuWrapperProps) => {
             </div>
 
             {/* Desktop navigation */}
-            <div className="hidden sm:block bg-red-800">{children}</div>
+            <div className="hidden sm:block flex-1">{children}</div>
 
             {/* Mobile navigation */}
             {isOpen && (

@@ -23,7 +23,7 @@ export const Header = () => {
 
                     <Suspense fallback={null}>
                         <MenuWrapper>
-                            <Navigation className="flex flex-col sm:flex-row  items-center gap-6 min-h-full text-base self-stretch  font-medium sm:pl-8" />
+                            <Navigation className="flex flex-col sm:flex-row  items-center gap-6 min-h-full text-base self-stretch  font-medium sm:pl-8" withSearch />
                         </MenuWrapper>
                     </Suspense>
                 </div>
