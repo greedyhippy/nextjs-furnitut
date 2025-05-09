@@ -61,12 +61,29 @@ query FetchCategory($path: String!, $limit: Int = 25, $skip: Int = 0) {
     }
 }
 
-query SearchCategory($path: String!, $browsePath: String!, $limit: Int = 25, $skip: Int = 0) {
-    search(path: $path, pagination: {limit: $limit, skip: $skip}) {
+query SearchCategory(
+    $path: String!
+    $browsePath: String!
+    $limit: Int = 25
+    $skip: Int = 0
+    $filters: TenantFilter
+) {
+    search(
+        path: $path
+        pagination: { limit: $limit, skip: $skip }
+        facets: {
+            price_default: {
+                boundaries: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+                key: "price"
+            }
+        }
+        filters: $filters
+    ) {
         summary {
             totalHits
             hasMoreHits
             hasPreviousHits
+            price: facets(key: "price")
         }
         hits {
             name
