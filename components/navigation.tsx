@@ -1,9 +1,11 @@
 import { FetchLayoutDocument, MenuItemFragment } from '@/generated/discovery/graphql';
 import { apiRequest } from '@/utils/api-request';
 import Link from 'next/link';
+import { SearchBar } from '@/components/SearchBar';
 
 type NavigationProps = {
     className?: string;
+    withSearch?: boolean;
 };
 
 const fetchNavigation = async () => {
@@ -21,16 +23,22 @@ const fetchNavigation = async () => {
     return { navigation };
 };
 
-export const Navigation = async ({ className }: NavigationProps) => {
+export const Navigation = async ({ className, withSearch }: NavigationProps) => {
     const { navigation } = await fetchNavigation();
 
     return (
         <div className={className}>
             {navigation?.map(({ href, name }) => (
-                <Link href={href} className="h-full flex items-center" key={name} data-testid={`navigation-link-${name.toLowerCase()}`}>
+                <Link
+                    href={href}
+                    className="h-full flex items-center"
+                    key={name}
+                    data-testid={`navigation-link-${name.toLowerCase()}`}
+                >
                     {name}
                 </Link>
             ))}
+            {withSearch && <SearchBar />}
         </div>
     );
 };

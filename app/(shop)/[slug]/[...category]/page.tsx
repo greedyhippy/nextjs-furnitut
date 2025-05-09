@@ -10,12 +10,6 @@ import { Filters } from './filters';
 import { transformPriceRanges } from '@/utils/price-range';
 import { ITEMS_PER_PAGE, Pagination } from '@/components/Pagination';
 
-interface SearchParams {
-    page?: string;
-    priceRange?: string;
-    inStock?: string;
-}
-
 interface FetchCategoryProps {
     path: string;
     limit?: number;
@@ -85,6 +79,12 @@ function buildFilterCriteria(inStock: boolean | undefined, priceRange: string | 
     }
 
     return filterCriteria;
+}
+
+interface SearchParams {
+    page?: string;
+    priceRange?: string;
+    inStock?: string;
 }
 
 interface CategoryOrProductProps {
