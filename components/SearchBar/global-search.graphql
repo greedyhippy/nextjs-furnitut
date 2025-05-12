@@ -1,7 +1,7 @@
 query GlobalSearch($term: String!) {
     search(
         term: $term
-        options: { fuzzy: { fuzziness: DOUBLE } }
+        options: { fuzzy: { fuzziness: SINGLE } }
         filters: { type_in: [product] }
     ) {
         summary {
