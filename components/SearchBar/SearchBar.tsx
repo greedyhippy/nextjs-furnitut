@@ -112,8 +112,6 @@ export function SearchBar() {
         };
     }, []);
 
-    console.log(results);
-
     return (
         <div className="relative w-full max-w-md mr-2 ml-auto">
             <div className="relative">
