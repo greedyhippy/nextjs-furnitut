@@ -6,7 +6,20 @@ import { GlobalSearchDocument } from '@/generated/graphql';
 import { apiRequest } from '@/utils/api-request';
 
 export function SearchBar() {
-    const [results, setResults] = useState([]);
+    interface SearchResult {
+        id: string;
+        path: string;
+        name: string;
+        description?: string;
+        defaultVariant?: {
+            firstImage?: {
+                variants?: Array<{
+                    url?: string;
+                }>;
+            };
+        };
+    }
+    const [results, setResults] = useState<SearchResult[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -23,6 +36,7 @@ export function SearchBar() {
         const results = response?.data?.search?.hits ?? [];
         setSelectedIndex(-1);
 
+        // @ts-expect-error
         setResults(results);
         setIsOpen(!!results.length);
     }, 300);
@@ -48,7 +62,7 @@ export function SearchBar() {
                 break;
             case 'Enter':
                 if (selectedIndex >= 0) {
-                    handleSelect(results[selectedIndex]);
+                    handleSelect();
                 }
                 break;
             case 'Escape':
@@ -71,6 +85,10 @@ export function SearchBar() {
                 !inputRef.current?.contains(event.target as Node)
             ) {
                 setIsOpen(false);
+
+                if (inputRef.current) {
+                    inputRef.current.value = '';
+                }
             }
         };
 
@@ -80,6 +98,10 @@ export function SearchBar() {
                 inputRef.current?.focus();
             }
         };
+
+        if (typeof window === 'undefined') {
+            return
+        }
 
         document.addEventListener('mousedown', handleClickOutside);
         window.addEventListener('keydown', handleCommandK);
@@ -93,14 +115,14 @@ export function SearchBar() {
     console.log(results);
 
     return (
-        <div className="relative w-full max-w-md mr-2">
+        <div className="relative w-full max-w-md mr-2 ml-auto">
             <div className="relative">
                 <input
                     ref={inputRef}
                     type="text"
                     onChange={handleSearch}
                     onKeyDown={handleKeyDown}
-                    className="w-full px-8 py-2 border border-muted rounded-md pr-10 focus:outline-none focus:ring-1 focus:ring-dark"
+                    className="w-full px-8 py-2 border border-muted rounded-full pr-10 focus:outline-none focus:ring-1 focus:ring-dark placeholder:text-dark/25"
                     placeholder="Search..."
                     role="combobox"
                     aria-expanded={isOpen}
@@ -117,7 +139,7 @@ export function SearchBar() {
                         />
                     </svg>
                 </span>
-                <span className="absolute top-1/2 -translate-y-1/2 right-3 flex-none text-xs text-dark/35 font-semibold text-gray-400 group-data-focus:text-dark/70">
+                <span className="absolute top-1/2 -translate-y-1/2 right-3 flex-none text-xs text-dark/25 font-semibold text-gray-400 group-data-focus:text-dark/70">
                     <kbd className="font-sans">⌘</kbd>
                     <kbd className="font-sans">K</kbd>
                 </span>
