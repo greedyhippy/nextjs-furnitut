@@ -79,11 +79,11 @@ export const CartItems = () => {
                                         {item.price.discounts?.length > 0 && (
                                             <>
                                                 <s className="text-sm text-dark/60">
-                                                    <Price price={{ price: item.variant.price.gross }} />
+                                                    <Price price={{ price: item.variant.price.gross}} />
                                                 </s>
                                                 <br />
                                                 <Badge className={'text-xs mr-2'}>
-                                                    -{item.price.discounts?.[0].percent}%
+                                                    -{Math.round((item.price.discounts?.[0].percent + Number.EPSILON) * 100) / 100}%
                                                 </Badge>
                                             </>
                                         )}
