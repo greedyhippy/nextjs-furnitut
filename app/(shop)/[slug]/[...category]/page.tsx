@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { Filters } from './filters';
 import { transformPriceRanges } from '@/utils/price-range';
 import { ITEMS_PER_PAGE, Pagination } from '@/components/Pagination';
+import { Suspense } from 'react';
 
 interface FetchCategoryProps {
     path: string;
@@ -125,7 +126,9 @@ export default async function CategoryOrProduct(props: CategoryOrProductProps) {
                 <Breadcrumbs breadcrumbs={breadcrumbs} />
                 <h1 className="text-4xl font-bold py-4">{name}</h1>
                 {/* Filters */}
-                <Filters priceRange={transformed} selectedPriceRange={priceRange} inStock={!!inStock} />
+                <Suspense fallback={null}>
+                    <Filters priceRange={transformed} selectedPriceRange={priceRange} inStock={!!inStock} />
+                </Suspense>
             </div>
             {blocks && (
                 <div className={classnames('flex flex-col items-center pt-12', !!blocks?.length && 'pb-12')}>
