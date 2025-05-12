@@ -1,5 +1,5 @@
 import { storage } from '@/core/storage.server';
-import { crystallizeClient } from '../core/crystallize-client.server';
+import { crystallizeClient } from '@/core/crystallize-client.server';
 import { FETCH_CART, PRICE_FRAGMENT } from './fetch-cart';
 
 type Item = { sku: string; quantity: number };
@@ -7,6 +7,7 @@ type Item = { sku: string; quantity: number };
 type CartInput = {
     items: Item[];
     id?: string;
+    context?: { price: { decimals: number; currency: string } };
 };
 
 export const hydrateCart = async (cartId: string | undefined, items: Item[]) => {
@@ -14,6 +15,7 @@ export const hydrateCart = async (cartId: string | undefined, items: Item[]) => 
 
     if (cartId) {
         input.id = cartId;
+        input.context = { price: { decimals: 2, currency: 'EUR' } };
     }
 
     try {
