@@ -2567,6 +2567,7 @@ export type StoryFacet = {
   depth: InputMaybe<NumberFacet>;
   featured_items_name: InputMaybe<StringFacet>;
   featured_items_path: InputMaybe<StringFacet>;
+  featured_skus: InputMaybe<StringFacet>;
   language: InputMaybe<StringFacet>;
   meta_title: InputMaybe<StringFacet>;
   name: InputMaybe<StringFacet>;
@@ -2607,6 +2608,8 @@ export type StoryFilter = {
   featured_items_shape: InputMaybe<StringFilter>;
   /** Filter on "featured.items.type" */
   featured_items_type: InputMaybe<StringFilter>;
+  /** Filter on "featured.skus" */
+  featured_skus: InputMaybe<StringFilter>;
   /** Filter on "history" */
   history: InputMaybe<StringFilter>;
   /** Filter on "id" */
@@ -2711,6 +2714,8 @@ export type StorySort = {
   featured_items_shape: InputMaybe<SortOrder>;
   /** Sort on "featured.items.type" */
   featured_items_type: InputMaybe<SortOrder>;
+  /** Sort on "featured.skus" */
+  featured_skus: InputMaybe<SortOrder>;
   /** Sort on "history" */
   history: InputMaybe<SortOrder>;
   /** Sort on "id" */
@@ -2972,6 +2977,7 @@ export type TenantFacet = {
   downloads_title: InputMaybe<StringFacet>;
   featured_items_name: InputMaybe<StringFacet>;
   featured_items_path: InputMaybe<StringFacet>;
+  featured_skus: InputMaybe<StringFacet>;
   label: InputMaybe<StringFacet>;
   language: InputMaybe<StringFacet>;
   link_item_items_name: InputMaybe<StringFacet>;
@@ -3209,6 +3215,8 @@ export type TenantFilter = {
   featured_items_shape: InputMaybe<StringFilter>;
   /** Filter on "featured.items.type" */
   featured_items_type: InputMaybe<StringFilter>;
+  /** Filter on "featured.skus" */
+  featured_skus: InputMaybe<StringFilter>;
   /** Filter on "history" */
   history: InputMaybe<StringFilter>;
   /** Filter on "icon.caption.plainText" */
@@ -3514,6 +3522,8 @@ export type TenantSort = {
   featured_items_shape: InputMaybe<SortOrder>;
   /** Sort on "featured.items.type" */
   featured_items_type: InputMaybe<SortOrder>;
+  /** Sort on "featured.skus" */
+  featured_skus: InputMaybe<SortOrder>;
   /** Sort on "history" */
   history: InputMaybe<SortOrder>;
   /** Sort on "id" */
