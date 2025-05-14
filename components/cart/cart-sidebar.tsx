@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import classNames from 'classnames';
 
 import { CartItems } from './cart-items';
 import { Price } from '../price';
@@ -59,6 +58,7 @@ export const CartSidebar = () => {
                 <CartItems />
             </div>
             <div className={classNames('flex flex-row my-3 justify-between', { hidden: cart.items.length })}>
+            <div className={classNames('flex flex-row my-3 justify-between', { hidden: !!cart.items.length })}>
                 <form className="flex-1" action={handleApplyCoupon}>
                     <label htmlFor={COUPON_CODE_NAME} className="block text-sm/6 font-medium text-dark/70">
                         Coupon code
