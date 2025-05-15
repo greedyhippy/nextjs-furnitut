@@ -21,7 +21,7 @@ export const hydrateCart = async (cartId: string | undefined, items: Item[], con
         context: {
             price: {
                 ...(context?.price ?? {}),
-                decimals: 2,
+                decimals: 4,
             },
         },
     };
