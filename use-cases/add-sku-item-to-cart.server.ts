@@ -9,7 +9,8 @@ type CartInput = {
     id?: string;
     context?: {
         price: {
-            voucherCode: string;
+            voucherCode?: string;
+            decimals?: number;
         };
     };
 };
@@ -17,7 +18,12 @@ type CartInput = {
 export const hydrateCart = async (cartId: string | undefined, items: Item[], context?: CartInput['context']) => {
     const input: CartInput = {
         items,
-        ...(context ? { context } : {}),
+        context: {
+            price: {
+                ...(context?.price ?? {}),
+                decimals: 2,
+            },
+        },
     };
 
     if (cartId) {
