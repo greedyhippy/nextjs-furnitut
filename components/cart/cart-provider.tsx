@@ -48,10 +48,6 @@ export const CartProvider = ({ children }: CartProviderProps) => {
             return getNextCart({ cart: prevCart, cartItem, action, itemIndex });
         });
 
-        for (const [key, value] of formData) {
-            console.log(key, value );
-        }
-
         handleCartAction(formData);
     };
 
