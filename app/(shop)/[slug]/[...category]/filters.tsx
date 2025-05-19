@@ -8,8 +8,6 @@ import {
     Disclosure,
     DisclosureButton,
     DisclosurePanel,
-    Field,
-    Label,
     Menu,
     MenuButton,
     MenuItem,
@@ -18,12 +16,11 @@ import {
     PopoverButton,
     PopoverGroup,
     PopoverPanel,
-    Switch,
 } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { SortingOption } from './types';
+import { FilterOption, SortingOption } from './types';
 import classNames from 'classnames';
 
 const sortOptions: { label: string; value: SortingOption }[] = [
@@ -41,6 +38,7 @@ interface Filter {
         value: string;
         label: string;
         count: number;
+        checked: boolean;
     }[];
 }
 
@@ -55,23 +53,26 @@ const filters: Filter[] = [
         name: 'Price',
         options: [],
     },
+    {
+        id: 'stock',
+        name: 'Stock',
+        options: [],
+    },
 ];
 
 const PRICE_RANGE_KEY = 'priceRange';
-const IN_STOCK_KEY = 'inStock';
+const STOCK_KEY = 'stock';
 const SORTING_KEY = 'sort';
 const PARENT_PATHS_KEY = 'parentPath';
 
 interface FiltersProps {
-    priceRange: { value: string; label: string; count: number }[];
-    selectedPriceRange?: string | `${string},${string}`;
-    inStock?: boolean;
+    priceRange: FilterOption[];
     sorting: SortingOption;
-    paths: { value: string; label: string; count: number }[];
-    selectedParentPath?: string;
+    paths: FilterOption[];
+    stockOptions: FilterOption[];
 }
 
-export function Filters({ inStock, priceRange, selectedPriceRange, sorting, paths, selectedParentPath }: FiltersProps) {
+export function Filters({ priceRange, sorting, paths, stockOptions }: FiltersProps) {
     const searchParam = useSearchParams();
     const pathname = usePathname();
     const router = useRouter();
@@ -79,6 +80,7 @@ export function Filters({ inStock, priceRange, selectedPriceRange, sorting, path
 
     filters.find((filter) => filter.id === 'parentPaths')!.options = paths;
     filters.find((filter) => filter.id === 'price')!.options = priceRange;
+    filters.find((filter) => filter.id === 'stock')!.options = stockOptions;
 
     const updateUrlParams = (params: URLSearchParams, key: string, value: string | null) => {
         if (value === null) {
@@ -87,13 +89,6 @@ export function Filters({ inStock, priceRange, selectedPriceRange, sorting, path
             params.set(key, value);
         }
         return `${pathname}${params.toString() ? `?${params.toString()}` : ''}`;
-    };
-
-    const handleStockChange = (checked: boolean) => {
-        const params = new URLSearchParams(searchParam);
-        const value = checked ? 'true' : null;
-
-        router.push(updateUrlParams(params, IN_STOCK_KEY, value));
     };
 
     const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -108,6 +103,10 @@ export function Filters({ inStock, priceRange, selectedPriceRange, sorting, path
 
         if (name === 'price') {
             return router.push(updateUrlParams(params, PRICE_RANGE_KEY, value));
+        }
+
+        if (name === 'stock') {
+            return router.push(updateUrlParams(params, STOCK_KEY, value));
         }
     };
 
@@ -168,12 +167,13 @@ export function Filters({ inStock, priceRange, selectedPriceRange, sorting, path
                                                         <div className="group grid size-4 grid-cols-1">
                                                             <input
                                                                 defaultValue={option.value}
-                                                                defaultChecked={option.value === selectedPriceRange}
+                                                                defaultChecked={option.checked}
+                                                                disabled={option.count === 0}
                                                                 onChange={handleCheckboxChange}
                                                                 id={`filter-mobile-${section.id}-${optionIdx}`}
                                                                 name={`${section.id}`}
                                                                 type="checkbox"
-                                                                className="col-start-1 row-start-1 appearance-none rounded-sm border border-dark/30 bg-light checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-dark/30 disabled:bg-dark/10 disabled:checked:bg-dark/10 forced-colors:appearance-auto"
+                                                                className="col-start-1 row-start-1 appearance-none rounded-sm border border-dark/30 bg-light checked:border-accent/60 checked:bg-accent/60 indeterminate:border-accent/60 indeterminate:bg-accent/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent/60 disabled:border-dark/30 disabled:bg-dark/10 disabled:checked:bg-dark/10 forced-colors:appearance-auto"
                                                             />
                                                             <svg
                                                                 fill="none"
@@ -202,9 +202,7 @@ export function Filters({ inStock, priceRange, selectedPriceRange, sorting, path
                                                         className="text-sm text-dark/50 flex justify-between w-full"
                                                     >
                                                         {option.label}
-                                                        <span className="ml-4 text-dark/50">
-                                                                    {option.count}
-                                                                </span>
+                                                        <span className="ml-4 text-dark/50">{option.count}</span>
                                                     </label>
                                                 </div>
                                             ))}
@@ -212,18 +210,6 @@ export function Filters({ inStock, priceRange, selectedPriceRange, sorting, path
                                     </DisclosurePanel>
                                 </Disclosure>
                             ))}
-                            <Field className="px-4 flex items-center">
-                                <Label as="span" className="mr-3 text-sm">
-                                    In Stock
-                                </Label>
-                                <Switch
-                                    checked={inStock}
-                                    onChange={handleStockChange}
-                                    className="group inline-flex h-6 w-11 items-center rounded-full bg-dark/20 transition data-checked:bg-accent/60"
-                                >
-                                    <span className="size-4 translate-x-1 rounded-full bg-light transition group-data-checked:translate-x-6" />
-                                </Switch>
-                            </Field>
                         </form>
                     </DialogPanel>
                 </div>
@@ -288,11 +274,9 @@ export function Filters({ inStock, priceRange, selectedPriceRange, sorting, path
                                         <Popover key={section.name} className="relative inline-block px-4 text-left">
                                             <PopoverButton className="group inline-flex justify-center text-sm font-medium text-dark/70 hover:text-dark/90">
                                                 <span>{section.name}</span>
-                                                {/*{sectionIdx === 0 ? (*/}
-                                                {/*    <span className="ml-1.5 rounded-sm bg-dark/20 px-1.5 py-0.5 text-xs font-semibold text-dark/70 tabular-nums">*/}
-                                                {/*        1*/}
-                                                {/*    </span>*/}
-                                                {/*) : null}*/}
+                                                <span className="ml-1.5 rounded-sm bg-dark/20 px-1.5 py-0.5 text-xs font-semibold text-dark/70 tabular-nums">
+                                                    {section.options.filter((option) => option.checked).length}
+                                                </span>
                                                 <ChevronDownIcon
                                                     aria-hidden="true"
                                                     className="-mr-1 ml-1 size-5 shrink-0 text-dark/40 group-hover:text-dark/50"
@@ -305,15 +289,19 @@ export function Filters({ inStock, priceRange, selectedPriceRange, sorting, path
                                             >
                                                 <form className="space-y-4">
                                                     {section.options.map((option, optionIdx) => (
-                                                        <div key={option.value} className="flex gap-3">
+                                                        <div
+                                                            key={option.value}
+                                                            className={classNames('flex gap-3 group', {
+                                                                'cursor-not-allowed text-dark/30': option.count === 0,
+                                                                'text-dark/90': option.count !== 0,
+                                                            })}
+                                                        >
                                                             <div className="flex h-5 shrink-0 items-center">
                                                                 <div className="group grid size-4 grid-cols-1">
                                                                     <input
                                                                         defaultValue={option.value}
-                                                                        defaultChecked={
-                                                                            option.value === selectedPriceRange ||
-                                                                            option.value === selectedParentPath
-                                                                        }
+                                                                        defaultChecked={option.checked}
+                                                                        disabled={option.count === 0}
                                                                         onChange={handleCheckboxChange}
                                                                         id={`filter-${section.id}-${optionIdx}`}
                                                                         name={`${section.id}`}
@@ -344,7 +332,7 @@ export function Filters({ inStock, priceRange, selectedPriceRange, sorting, path
                                                             </div>
                                                             <label
                                                                 htmlFor={`filter-${section.id}-${optionIdx}`}
-                                                                className="pr-6 text-sm font-medium whitespace-nowrap text-dark/90 w-full flex justify-between"
+                                                                className="pr-6 text-sm font-medium whitespace-nowrap w-full flex justify-between group-disabled:text-dark/30"
                                                             >
                                                                 {option.label}
                                                                 <span className="ml-4 text-dark/50">
@@ -357,18 +345,6 @@ export function Filters({ inStock, priceRange, selectedPriceRange, sorting, path
                                             </PopoverPanel>
                                         </Popover>
                                     ))}
-                                    <Field className="px-4 flex items-center">
-                                        <Label as="span" className="mr-3 text-sm">
-                                            In Stock
-                                        </Label>
-                                        <Switch
-                                            checked={inStock}
-                                            onChange={handleStockChange}
-                                            className="group inline-flex h-6 w-11 items-center rounded-full bg-dark/20 transition data-checked:bg-accent/60"
-                                        >
-                                            <span className="size-4 translate-x-1 rounded-full bg-light transition group-data-checked:translate-x-6" />
-                                        </Switch>
-                                    </Field>
                                 </PopoverGroup>
                             </div>
                         </div>

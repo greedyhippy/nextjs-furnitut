@@ -1,11 +1,13 @@
 import { TenantFilter } from '@/generated/graphql';
 import { PRICE_FIELD } from './constants';
 
-export function buildFilterCriteria(
-    inStock: boolean | undefined,
-    priceRange: string | undefined,
-    parentPath: string | undefined,
-): TenantFilter {
+interface BuildFilterCriteriaProps {
+    priceRange?: string;
+    parentPath?: string;
+    stock?: string;
+}
+
+export function buildFilterCriteria({ stock, parentPath, priceRange }: BuildFilterCriteriaProps): TenantFilter {
     // @ts-expect-error
     const filterCriteria: TenantFilter = {};
 
@@ -16,9 +18,11 @@ export function buildFilterCriteria(
         };
     }
 
-    if (inStock) {
+    if (stock) {
         // @ts-expect-error
-        filterCriteria[STOCK_FIELD] = { exists: true };
+        filterCriteria[stock] = {
+            exists: true,
+        };
     }
 
     if (priceRange) {

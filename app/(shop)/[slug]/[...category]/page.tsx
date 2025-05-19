@@ -16,8 +16,8 @@ import { Filters } from './filters';
 import { ITEMS_PER_PAGE, Pagination } from '@/components/Pagination';
 import { Suspense } from 'react';
 import { buildFilterCriteria } from './utils';
-import { EntertainmentPriceRange, ProductsPriceRange, SORTING_CONFIGS } from './constants';
-import { SortingOption } from './types';
+import { ENTERTAINMENT_PRICE_RANGE, PRODUCTS_PRICE_RANGE, SORTING_CONFIGS, STOCK_RANGE } from './constants';
+import { FilterOption, SortingOption } from './types';
 
 interface FetchCategoryProps {
     path: string;
@@ -32,9 +32,9 @@ type ItemShape = 'category' | 'product' | null;
 interface SearchParams {
     page?: string;
     priceRange?: string;
-    inStock?: string;
     sort?: SortingOption;
     parentPath?: string;
+    stock?: string;
 }
 
 const searchCategory = async ({ path, limit, skip = 0, filters, sorting }: FetchCategoryProps) => {
@@ -45,7 +45,8 @@ const searchCategory = async ({ path, limit, skip = 0, filters, sorting }: Fetch
         skip,
         filters,
         sorting,
-        boundaries: path.includes('entertainment') ? EntertainmentPriceRange : ProductsPriceRange,
+        boundaries: path.includes('entertainment') ? ENTERTAINMENT_PRICE_RANGE : PRODUCTS_PRICE_RANGE,
+        stockBoundaries: STOCK_RANGE,
     });
     const { hits, summary } = response.data.search ?? {};
     const { breadcrumbs, name, blocks, children } = response.data.browse?.category?.hits?.[0] ?? {};
@@ -90,7 +91,7 @@ interface CategoryOrProductProps {
 
 export default async function CategoryOrProduct(props: CategoryOrProductProps) {
     const params = await props.params;
-    const { page, priceRange, inStock, sort = 'popular', parentPath } = await props.searchParams;
+    const { page, priceRange, sort = 'popular', parentPath, stock } = await props.searchParams;
     const currentPage = Number(page ?? 1);
     const limit = ITEMS_PER_PAGE;
     const skip = currentPage ? (currentPage - 1) * limit : 0;
@@ -110,28 +111,59 @@ export default async function CategoryOrProduct(props: CategoryOrProductProps) {
         path,
         limit,
         skip,
-        filters: buildFilterCriteria(!!inStock, priceRange, parentPath),
+        filters: buildFilterCriteria({ priceRange, parentPath, stock }),
         sorting: SORTING_CONFIGS[sort] as TenantSort,
     });
-    const { totalHits, hasPreviousHits, hasMoreHits, price, parentPaths } = summary ?? {};
+    const { totalHits, hasPreviousHits, hasMoreHits, price, parentPaths, toronto, online, oslo } = summary ?? {};
 
-    type ParentPathFacet = Record<string, { count: number; label: string }>;
+    type ParentPathFacet = Record<string, { count: number; label: string; filter: string }>;
     const priceCounts = Object.values(price) as { count: number }[];
-    const pairs = createAdjacentPairs(path.includes('entertainment') ? EntertainmentPriceRange : ProductsPriceRange);
+    const pairs = createAdjacentPairs(
+        path.includes('entertainment') ? ENTERTAINMENT_PRICE_RANGE : PRODUCTS_PRICE_RANGE,
+    );
 
-    const priceRangeOptions = pairs.map((pair, index) => ({
+    const priceRangeOptions: FilterOption[] = pairs.map((pair, index) => ({
         value: pair.value,
         label: pair.label,
         count: priceCounts[index].count,
+        checked: priceRange === pair.value,
     }));
 
-    const paths = Object.entries(parentPaths as ParentPathFacet)
+    const paths: FilterOption[] = Object.entries(parentPaths as ParentPathFacet)
         .map(([key, value]) => ({
             value: key,
             label: value.label,
             count: value.count,
+            checked: parentPath === key,
         }))
         .sort((a, b) => a.value.localeCompare(b.value));
+
+    const onlineStock: FilterOption[] = Object.entries(online as ParentPathFacet)
+        .slice(0, 1)
+        .map(([key, value]) => ({
+            value: value.filter,
+            label: 'Online',
+            count: value.count,
+            checked: stock === value.filter,
+        }));
+    const osloStock: FilterOption[] = Object.entries(oslo as ParentPathFacet)
+        .slice(0, 1)
+        .map(([key, value]) => ({
+            value: value.filter,
+            label: 'Oslo',
+            count: value.count,
+            checked: stock === value.filter,
+        }));
+    const torontoStock: FilterOption[] = Object.entries(toronto as ParentPathFacet)
+        .slice(0, 1)
+        .map(([key, value]) => ({
+            value: value.filter,
+            label: 'Toronto',
+            count: value.count,
+            checked: stock === value.filter,
+        }));
+
+    const stockOptions = [...onlineStock, ...osloStock, ...torontoStock];
 
     return (
         <main>
@@ -140,14 +172,7 @@ export default async function CategoryOrProduct(props: CategoryOrProductProps) {
                 <h1 className="text-4xl font-bold py-4">{name}</h1>
                 {/* Filters */}
                 <Suspense fallback={null}>
-                    <Filters
-                        priceRange={priceRangeOptions}
-                        selectedPriceRange={priceRange}
-                        inStock={!!inStock}
-                        sorting={sort}
-                        paths={paths}
-                        selectedParentPath={parentPath}
-                    />
+                    <Filters priceRange={priceRangeOptions} sorting={sort} paths={paths} stockOptions={stockOptions} />
                 </Suspense>
             </div>
             {blocks && (
