@@ -18,6 +18,7 @@ import { Suspense } from 'react';
 import { buildFilterCriteria } from './utils';
 import { ENTERTAINMENT_PRICE_RANGE, PRODUCTS_PRICE_RANGE, SORTING_CONFIGS, STOCK_RANGE } from './constants';
 import { FilterOption, SortingOption } from './types';
+import { notFound } from 'next/navigation';
 
 interface FetchCategoryProps {
     path: string;
@@ -95,12 +96,12 @@ export default async function CategoryOrProduct(props: CategoryOrProductProps) {
     const currentPage = Number(page ?? 1);
     const limit = ITEMS_PER_PAGE;
     const skip = currentPage ? (currentPage - 1) * limit : 0;
-    const path = `/${params.slug}/${params.category.join('/')}`;
+    const path = `/${params.category.join('/')}`;
 
     const itemShape = await fetchItemShape(path);
     if (!itemShape) {
         // TODO: do a proper not found section
-        return <div>Nothing found</div>;
+        return notFound();
     }
 
     if (itemShape === 'product') {
@@ -175,12 +176,6 @@ export default async function CategoryOrProduct(props: CategoryOrProductProps) {
                     <Filters priceRange={priceRangeOptions} sorting={sort} paths={paths} stockOptions={stockOptions} />
                 </Suspense>
             </div>
-            {blocks && (
-                <div className={classNames('flex flex-col items-center pt-12', !!blocks?.length && 'pb-12')}>
-                    <Blocks blocks={blocks} />
-                </div>
-            )}
-
             {/* Categories List */}
             <div className={classNames('flex flex-wrap mx-auto gap-x-2 gap-y-2 max-w-(--breakpoint-2xl) px-12')}>
                 {categories?.map((child) => (
@@ -191,6 +186,13 @@ export default async function CategoryOrProduct(props: CategoryOrProductProps) {
                     </Link>
                 ))}
             </div>
+
+            {/* Blocks */}
+            {blocks && (
+                <div className={classNames('flex flex-col items-center pt-12', !!blocks?.length && 'pb-12')}>
+                    <Blocks blocks={blocks} />
+                </div>
+            )}
 
             {/* Products List */}
             <div

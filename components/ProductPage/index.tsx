@@ -38,7 +38,7 @@ const fetchData = async (path: string) => {
 export async function generateMetadata(props: ProductsProps): Promise<Metadata> {
     const searchParams = await props.searchParams;
     const params = await props.params;
-    const url = `/${params.slug}/${params.category.join('/')}`;
+    const url = `/${params.category.join('/')}`;
     const { meta, variants } = await fetchData(url);
     const currentVariant = findSuitableVariant({ variants: variants, searchParams });
 
@@ -70,7 +70,7 @@ export async function generateMetadata(props: ProductsProps): Promise<Metadata> 
 export default async function CategoryProduct(props: ProductsProps) {
     const searchParams = await props.searchParams;
     const params = await props.params;
-    const url = `/${params.slug}/${params.category.join('/')}`;
+    const url = `/${params.category.join('/')}`;
     const product = await fetchData(url);
     const currentVariant = findSuitableVariant({ variants: product.variants, searchParams });
     const dimensions = currentVariant?.dimensions;
