@@ -19,23 +19,23 @@ import { ENTERTAINMENT_PRICE_RANGE, PRODUCTS_PRICE_RANGE, SORTING_CONFIGS, STOCK
 import { FilterOption, SortingOption } from './types';
 import { notFound } from 'next/navigation';
 
-interface FetchCategoryProps {
+type FetchCategoryProps = {
     path: string;
     limit: number;
     skip?: number;
     filters: TenantFilter;
     sorting: TenantSort;
-}
+};
 
 type ItemShape = 'category' | 'product' | null;
 
-interface SearchParams {
+type SearchParams = {
     page?: string;
     priceRange?: string;
     sort?: SortingOption;
     parentPath?: string;
     stock?: string;
-}
+};
 
 const searchCategory = async ({ path, limit, skip = 0, filters, sorting }: FetchCategoryProps) => {
     const response = await apiRequest(SearchCategoryDocument, {
@@ -84,10 +84,10 @@ function createAdjacentPairs<T>(array: T[]): { value: string; label: string }[] 
     });
 }
 
-interface CategoryOrProductProps {
+type CategoryOrProductProps = {
     params: Promise<{ slug: string; category: string[] }>;
     searchParams: Promise<SearchParams>;
-}
+};
 
 export default async function CategoryOrProduct(props: CategoryOrProductProps) {
     const params = await props.params;

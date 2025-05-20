@@ -1,12 +1,12 @@
 export const ITEMS_PER_PAGE = 24;
 
-interface PaginationProps {
+type PaginationProps = {
     totalItems: number;
     url: string;
     currentPage: number;
     hasNextPage: boolean;
     hasPreviousPage: boolean;
-}
+};
 
 export function Pagination({ totalItems, currentPage, hasPreviousPage, hasNextPage, url }: PaginationProps) {
     const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);

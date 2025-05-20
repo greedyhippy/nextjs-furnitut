@@ -31,7 +31,7 @@ const sortOptions: { label: string; value: SortingOption }[] = [
     { label: 'Price Lowest', value: 'priceLow' },
 ];
 
-interface Filter {
+type Filter = {
     id: string;
     name: string;
     options: {
@@ -40,7 +40,7 @@ interface Filter {
         count: number;
         checked: boolean;
     }[];
-}
+};
 
 const filters: Filter[] = [
     {
@@ -65,12 +65,12 @@ const STOCK_KEY = 'stock';
 const SORTING_KEY = 'sort';
 const PARENT_PATHS_KEY = 'parentPath';
 
-interface FiltersProps {
+type FiltersProps = {
     priceRange: FilterOption[];
     sorting: SortingOption;
     paths: FilterOption[];
     stockOptions: FilterOption[];
-}
+};
 
 export function Filters({ priceRange, sorting, paths, stockOptions }: FiltersProps) {
     const searchParam = useSearchParams();

@@ -167,24 +167,24 @@ export function CommandPalette() {
     );
 }
 
-interface ImageVariant {
+type ImageVariant = {
     url: string;
     width: number;
     height: number;
-}
+};
 
-interface FirstImage {
+type FirstImage = {
     variants: ImageVariant[];
-}
+};
 
-interface DefaultVariant {
+type DefaultVariant = {
     firstImage: FirstImage;
     defaultPrice: number;
-}
+};
 
-interface Product {
+type Product = {
     id: string;
     name: string;
     path: string;
     defaultVariant: DefaultVariant;
-}
+};

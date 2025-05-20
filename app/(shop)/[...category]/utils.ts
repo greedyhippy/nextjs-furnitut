@@ -1,11 +1,11 @@
 import { TenantFilter } from '@/generated/discovery/graphql';
 import { PRICE_FIELD } from './constants';
 
-interface BuildFilterCriteriaProps {
+type BuildFilterCriteriaProps = {
     priceRange?: string;
     parentPath?: string;
     stock?: string;
-}
+};
 
 export function buildFilterCriteria({ stock, parentPath, priceRange }: BuildFilterCriteriaProps): TenantFilter {
     // @ts-expect-error
