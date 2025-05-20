@@ -3,12 +3,12 @@ import { crystallizeClient } from '@/core/crystallize-client.server';
 import { HydrateCartDocument } from '@/generated/shop/graphql';
 import { print } from 'graphql';
 
-interface Item {
+type Item = {
     sku: string;
     quantity: number;
-}
+};
 
-interface CartInput {
+type CartInput = {
     items: Item[];
     id?: string;
     context?: {
@@ -17,13 +17,13 @@ interface CartInput {
             decimals?: number;
         };
     };
-}
+};
 
-interface HydrateCartProps {
+type HydrateCartProps = {
     id?: string;
     items: Item[];
     voucherCode?: string;
-}
+};
 
 export const hydrateCart = async ({ id, items, voucherCode }: HydrateCartProps) => {
     const input: CartInput = {

@@ -1,12 +1,12 @@
 import type { Cart, CartItem, CartItemInput } from '@/use-cases/contracts/cart';
 import { CART_ACTION, CartAction } from '@/use-cases/types';
 
-interface GetNextCartProps {
+type GetNextCartProps = {
     cart: Cart | null;
     cartItem: CartItemInput;
     itemIndex: string;
     action: CartAction;
-}
+};
 
 const getPrice = (quantity: number, { price, variant }: CartItem) => ({
     ...price,
