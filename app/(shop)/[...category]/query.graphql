@@ -138,7 +138,7 @@ query SearchCategory(
         }
     }
     browse {
-        category(path: $browsePath, pagination: {limit: $limit, skip: $skip}) {
+        category(path: $browsePath) {
             hits {
                 name
                 breadcrumbs {
