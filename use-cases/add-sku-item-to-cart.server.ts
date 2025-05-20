@@ -1,47 +1,52 @@
 import { storage } from '@/core/storage.server';
 import { crystallizeClient } from '@/core/crystallize-client.server';
-import { FETCH_CART, PRICE_FRAGMENT } from './fetch-cart';
+import { HydrateCartDocument } from '@/generated/shop/graphql';
+import { print } from 'graphql';
 
-type Item = { sku: string; quantity: number };
+type Item = {
+    sku: string;
+    quantity: number;
+};
 
 type CartInput = {
     items: Item[];
     id?: string;
     context?: {
-        price: {
+        price?: {
             voucherCode?: string;
             decimals?: number;
         };
     };
 };
 
-export const hydrateCart = async (cartId: string | undefined, items: Item[], context?: CartInput['context']) => {
+type HydrateCartProps = {
+    id?: string;
+    items: Item[];
+    voucherCode?: string;
+};
+
+export const hydrateCart = async ({ id, items, voucherCode }: HydrateCartProps) => {
     const input: CartInput = {
         items,
         context: {
             price: {
-                ...(context?.price ?? {}),
+                voucherCode: voucherCode ?? '',
                 decimals: 4,
             },
         },
     };
 
-    if (cartId) {
-        input.id = cartId;
+    if (id) {
+        input.id = id;
     }
 
     try {
-        const data = await crystallizeClient.shopCartApi(
-            `#graphql
-            mutation HYDRATE_CART($input: CartInput!){ hydrate(input: $input) { ${FETCH_CART} } }
-            ${PRICE_FRAGMENT}
-            `,
-            { input },
-        );
+        const data = await crystallizeClient.shopCartApi(print(HydrateCartDocument), { input });
+
         await storage.setCartId(data.hydrate.id);
         return data.hydrate;
     } catch (exception) {
-        console.error('addSkuItemToCart without cartId', exception);
+        console.error('addSkuItemToCart without cartId', JSON.stringify(exception, null, 3));
         throw exception;
     }
 };
