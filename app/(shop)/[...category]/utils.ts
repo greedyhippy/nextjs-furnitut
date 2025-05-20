@@ -1,4 +1,4 @@
-import { TenantFilter } from '@/generated/graphql';
+import { TenantFilter } from '@/generated/discovery/graphql';
 import { PRICE_FIELD } from './constants';
 
 interface BuildFilterCriteriaProps {

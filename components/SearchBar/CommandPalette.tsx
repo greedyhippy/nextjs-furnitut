@@ -15,7 +15,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
 import { apiRequest } from '@/utils/api-request';
-import { GlobalSearchDocument } from '@/generated/graphql';
+import { GlobalSearchDocument } from '@/generated/discovery/graphql';
 import { debounce } from '@/utils/debounce';
 
 export function CommandPalette() {

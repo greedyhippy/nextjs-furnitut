@@ -1,4 +1,4 @@
-import { SortOrder, TenantSort } from '@/generated/graphql';
+import { SortOrder, TenantSort } from '@/generated/discovery/graphql';
 import { SortingOption } from './types';
 
 export const PRICE_FIELD = 'price_default' as const;

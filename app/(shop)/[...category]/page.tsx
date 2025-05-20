@@ -1,10 +1,9 @@
 import {
     FetchItemShapeDocument,
     SearchCategoryDocument,
-    SortOrder,
     TenantFilter,
     TenantSort,
-} from '@/generated/graphql';
+} from '@/generated/discovery/graphql';
 import { apiRequest } from '@/utils/api-request';
 import { Product } from '@/components/product';
 import { Breadcrumbs } from '@/components/breadcrumbs';
