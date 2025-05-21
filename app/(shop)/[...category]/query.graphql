@@ -18,6 +18,15 @@ query FetchCategory($path: String!, $limit: Int = 25, $skip: Int = 0) {
                             id
                             name
                             path
+                            image {
+                                url
+                                altText
+                                variants(maxWidth: 200, types: ["avif"]) {
+                                    url
+                                    width
+                                    height
+                                }
+                            }
                         }
                         ... on product {
                             id
@@ -61,25 +70,6 @@ query FetchCategory($path: String!, $limit: Int = 25, $skip: Int = 0) {
     }
 }
 
-query FetchCategoryExamples($path: String!) {
-    search(pagination: { limit: 1 }, path: $path, filters: { shape: { equals: "product" } }) {
-        hits {
-            name
-            ... on product {
-                defaultVariant {
-                    firstImage {
-                        url
-                        variants(types: ["avif"], maxWidth: 100) {
-                            url
-                            width
-                            height
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
 query SearchCategory(
     $path: String!
     $browsePath: String!
@@ -499,6 +489,15 @@ query SearchCategory(
                             id
                             name
                             path
+                            image {
+                                url
+                                altText
+                                variants(maxWidth: 200, types: ["avif"]) {
+                                    url
+                                    width
+                                    height
+                                }
+                            }
                         }
                     }
                 }

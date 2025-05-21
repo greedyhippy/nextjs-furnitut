@@ -1,8 +1,6 @@
 import {
     FetchItemShapeDocument,
     SearchCategoryDocument,
-    FetchCategoryExamplesDocument,
-    SortOrder,
     TenantFilter,
     TenantSort,
 } from '@/generated/discovery/graphql';
@@ -54,19 +52,12 @@ const searchCategory = async ({ path, limit, skip = 0, filters, sorting }: Fetch
     });
     const { hits, summary } = response.data.search ?? {};
     const { breadcrumbs, name, blocks, children } = response.data.browse?.category?.hits?.[0] ?? {};
-    const categories = children?.hits?.filter((item) => item?.shape === 'category');
 
-    for (const category of categories) {
-        const productExamples = await apiRequest(FetchCategoryExamplesDocument, {
-            path: `${category.path}/*`,
-        });
-        category.examples = productExamples.data?.search?.hits;
-    }
     return {
         name,
         blocks,
         breadcrumbs: breadcrumbs?.[0]?.filter((item) => !!item),
-        categories,
+        categories: children?.hits?.filter((item) => item?.shape === 'category'),
         products: hits?.filter((item) => item?.shape === 'product'),
         summary,
     };
@@ -175,43 +166,43 @@ export default async function CategoryOrProduct(props: CategoryOrProductProps) {
         }));
 
     const stockOptions = [...onlineStock, ...osloStock, ...torontoStock];
-
     return (
         <main>
-            <div className="page  pb-6">
-                <Breadcrumbs breadcrumbs={breadcrumbs} />
-                <h1 className="text-4xl font-bold py-4">{name}</h1>
-            </div>
-            {/* Categories List */}
-            <div
-                className={classNames(
-                    'flex flex-wrap border-b border-muted mx-auto pt-4 pb-6 gap-x-4   max-w-(--breakpoint-2xl)',
-                )}
-            >
-                {categories?.map((child) => {
-                    return (
-                        // @ts-expect-error
-                        <Link
-                            className="text-dark flex gap-1  flex-col justify-center  items-center bg-white"
-                            href={child?.path}
-                            key={child?.id}
-                        >
-                            {/*@ts-expect-error*/}
-                            <div className="w-22 h-24 text-center rounded-lg overflow-hidden border border-muted relative">
-                                {child.examples?.map((example) => {
-                                    return (
-                                        <Image
-                                            key={`${example?.defaultVariant?.firstImage?.url}-${example?.name}`}
-                                            {...example?.defaultVariant?.firstImage}
-                                            alt={example?.name}
-                                        />
-                                    );
-                                })}
-                            </div>
-                            <span className="font-medium">{child?.name}</span>
-                        </Link>
-                    );
-                })}
+            <div className="border-muted border-b border-0">
+                <div className="page  pb-2 ">
+                    <Breadcrumbs breadcrumbs={breadcrumbs} />
+                    <h1 className="text-6xl font-bold py-4 ">{name}</h1>
+                </div>
+                {/* Categories List */}
+                <div className={classNames('flex flex-wrap mx-auto gap-2  max-w-(--breakpoint-2xl) empty:pb-0 pb-4 ')}>
+                    {categories?.map((child) => {
+                        return (
+                            <Link
+                                className={classNames(
+                                    'group w-28 pt-2 text-center text-dark divide divide-black divide-solid hover:border-dark transition-all',
+                                    'bg-light border-muted border border-solid rounded-lg  flex flex-col gap-1  justify-start  items-center',
+                                )}
+                                /*@ts-expect-error*/
+                                href={child?.path}
+                                /*@ts-expect-error*/
+
+                                key={child?.id}
+                            >
+                                <div className="w-24 h-24 text-center rounded-lg overflow-hidden border border-muted relative ">
+                                    {/*@ts-expect-error*/}
+                                    {child.image?.map((img) => {
+                                        /*@ts-expect-error*/
+                                        return <Image {...img} key={`${img?.url}`} alt={child?.name} sizes="200px" />;
+                                    })}
+                                </div>
+                                <span className="group-hover:font-bold py-2 text-sm text-wrap max-w-full">
+                                    {/*@ts-expect-error*/}
+                                    {child?.name}
+                                </span>
+                            </Link>
+                        );
+                    })}
+                </div>
             </div>
 
             {/* Blocks */}
@@ -224,15 +215,17 @@ export default async function CategoryOrProduct(props: CategoryOrProductProps) {
             {/* Products List */}
             <div
                 className={classNames(
-                    'grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-4 max-w-(--breakpoint-2xl) mx-auto mb-8 relative',
+                    'grid  mt-2 grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-4 max-w-(--breakpoint-2xl) mx-auto mb-8 relative',
                 )}
             >
-                <div className="col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4 py-4 bg-soft border-b border-muted ">
+                <div className="col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4 pb-4 mt-4">
                     {/* Filters */}
+
                     <Suspense fallback={null}>
                         <Filters
                             priceRange={priceRangeOptions}
                             sorting={sort}
+                            totalHits={totalHits ?? 0}
                             paths={paths}
                             stockOptions={stockOptions}
                         />

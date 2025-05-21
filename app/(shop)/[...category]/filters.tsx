@@ -72,9 +72,10 @@ type FiltersProps = {
     sorting: SortingOption;
     paths: FilterOption[];
     stockOptions: FilterOption[];
+    totalHits: number;
 };
 
-export function Filters({ priceRange, sorting, paths, stockOptions }: FiltersProps) {
+export function Filters({ priceRange, sorting, paths, stockOptions, totalHits }: FiltersProps) {
     const searchParam = useSearchParams();
     const pathname = usePathname();
     const router = useRouter();
@@ -227,57 +228,62 @@ export function Filters({ priceRange, sorting, paths, stockOptions }: FiltersPro
 
                 <div>
                     <div className="mx-auto flex items-center justify-between">
-                        <Menu as="div" className="relative inline-block text-left">
-                            {({ open }) => (
-                                <>
-                                    <div>
-                                        <MenuButton
-                                            className={classNames(
-                                                'group cursor-pointer inline-flex justify-center text-sm font-medium text-dark bg-muted px-4 py-2 rounded-full hover:border-dark active:border-dark border',
-                                                open ? 'border-dark' : 'border-transparent',
-                                            )}
-                                        >
-                                            <span className="font-bold">
-                                                {sortOptions.find((options) => options.value === sorting)?.label}
-                                            </span>
-                                            <ChevronDownIcon
-                                                aria-hidden="true"
+                        <div className="flex items-center gap-2">
+                            <Menu as="div" className="relative inline-block text-left">
+                                {({ open }) => (
+                                    <>
+                                        <div>
+                                            <MenuButton
                                                 className={classNames(
-                                                    '-mr-1 ml-1 size-5 shrink-0 text-dark/40 group-hover:text-dark/50',
-                                                    open ? 'rotate-180' : '',
+                                                    'group cursor-pointer inline-flex justify-center text-sm font-medium text-dark bg-muted px-4 py-2 rounded-full hover:border-dark active:border-dark border',
+                                                    open ? 'border-dark' : 'border-transparent',
                                                 )}
-                                            />
-                                        </MenuButton>
-                                    </div>
-
-                                    <MenuItems
-                                        transition
-                                        className="absolute left-0 z-10 mt-2 w-40 origin-top-left rounded-md bg-light shadow-2xl ring-1 ring-dark/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
-                                        onChange={(e) => {
-                                            console.log(e);
-                                        }}
-                                    >
-                                        <div className="py-1">
-                                            {sortOptions.map((option) => (
-                                                <MenuItem
-                                                    key={option.value}
-                                                    as={'span'}
+                                            >
+                                                <span className="font-bold">
+                                                    {sortOptions.find((options) => options.value === sorting)?.label}
+                                                </span>
+                                                <ChevronDownIcon
+                                                    aria-hidden="true"
                                                     className={classNames(
-                                                        option.value === sorting
-                                                            ? 'font-medium text-dark/90'
-                                                            : 'text-dark/50',
-                                                        'block cursor-pointer px-4 py-2 text-sm  data-focus:bg-dark/10 data-focus:outline-hidden',
+                                                        '-mr-1 ml-1 size-5 shrink-0 text-dark/40 group-hover:text-dark/50',
+                                                        open ? 'rotate-180' : '',
                                                     )}
-                                                    onClick={(e) => handleSortingChange(option.value)}
-                                                >
-                                                    <span className="font-bold">{option.label}</span>
-                                                </MenuItem>
-                                            ))}
+                                                />
+                                            </MenuButton>
                                         </div>
-                                    </MenuItems>
-                                </>
-                            )}
-                        </Menu>
+
+                                        <MenuItems
+                                            transition
+                                            className="absolute left-0 z-10 mt-2 w-40 origin-top-left rounded-md bg-light shadow-2xl ring-1 ring-dark/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+                                            onChange={(e) => {
+                                                console.log(e);
+                                            }}
+                                        >
+                                            <div className="py-1">
+                                                {sortOptions.map((option) => (
+                                                    <MenuItem
+                                                        key={option.value}
+                                                        as={'span'}
+                                                        className={classNames(
+                                                            option.value === sorting
+                                                                ? 'font-medium text-dark/90'
+                                                                : 'text-dark/50',
+                                                            'block cursor-pointer px-4 py-2 text-sm  data-focus:bg-dark/10 data-focus:outline-hidden',
+                                                        )}
+                                                        onClick={(e) => handleSortingChange(option.value)}
+                                                    >
+                                                        <span className="font-bold">{option.label}</span>
+                                                    </MenuItem>
+                                                ))}
+                                            </div>
+                                        </MenuItems>
+                                    </>
+                                )}
+                            </Menu>
+                            <p className="m-0 p-0">
+                                <strong>{totalHits}</strong> products
+                            </p>
+                        </div>
 
                         <button
                             type="button"
@@ -300,12 +306,8 @@ export function Filters({ priceRange, sorting, paths, stockOptions }: FiltersPro
                                                             open ? 'border-dark' : 'border-transparent',
                                                         )}
                                                     >
-                                                        <span className="font-bold">
-                                                            {section.name} {section.symbol}
-                                                        </span>
-                                                        <span className="ml-1.5 rounded-sm bg-dark/20 px-1.5 py-0.5 text-xs font-semibold text-dark/70 tabular-nums">
-                                                            {section.options.filter((option) => option.checked).length}
-                                                        </span>
+                                                        <span className="font-bold">{section.name}</span>
+
                                                         <ChevronDownIcon
                                                             aria-hidden="true"
                                                             className={classNames(
@@ -370,8 +372,8 @@ export function Filters({ priceRange, sorting, paths, stockOptions }: FiltersPro
                                                                         htmlFor={`filter-${section.id}-${optionIdx}`}
                                                                         className="pr-6 text-sm font-medium whitespace-nowrap text-dark/90 w-full flex justify-between"
                                                                     >
-                                                                        {option.label?.split('>')?.pop() ||
-                                                                            option.label}
+                                                                        {`${section.symbol || ''} ${option.label?.split('>')?.pop()}`}
+
                                                                         <span className="ml-4 text-dark/50">
                                                                             {option.count}
                                                                         </span>
