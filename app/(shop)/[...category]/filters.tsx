@@ -34,6 +34,7 @@ const sortOptions: { label: string; value: SortingOption }[] = [
 type Filter = {
     id: string;
     name: string;
+    symbol?: string;
     options: {
         value: string;
         label: string;
@@ -51,6 +52,7 @@ const filters: Filter[] = [
     {
         id: 'price',
         name: 'Price',
+        symbol: '€',
         options: [],
     },
     {
@@ -150,7 +152,9 @@ export function Filters({ priceRange, sorting, paths, stockOptions }: FiltersPro
                                 <Disclosure key={section.name} as="div" className="border-t border-dark/20 px-4 py-6">
                                     <h3 className="-mx-2 -my-3 flow-root">
                                         <DisclosureButton className="group flex w-full items-center justify-between bg-light px-2 py-3 text-sm text-dark/40">
-                                            <span className="font-medium text-dark/90">{section.name}</span>
+                                            <span className="font-medium text-dark/90">
+                                                {section.name} {section.symbol}
+                                            </span>
                                             <span className="ml-6 flex items-center">
                                                 <ChevronDownIcon
                                                     aria-hidden="true"
@@ -237,9 +241,6 @@ export function Filters({ priceRange, sorting, paths, stockOptions }: FiltersPro
                             <MenuItems
                                 transition
                                 className="absolute left-0 z-10 mt-2 w-40 origin-top-left rounded-md bg-light shadow-2xl ring-1 ring-dark/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
-                                onChange={(e) => {
-                                    console.log(e);
-                                }}
                             >
                                 <div className="py-1">
                                     {sortOptions.map((option) => (
@@ -273,7 +274,9 @@ export function Filters({ priceRange, sorting, paths, stockOptions }: FiltersPro
                                     {filters.map((section, sectionIdx) => (
                                         <Popover key={section.name} className="relative inline-block px-4 text-left">
                                             <PopoverButton className="group inline-flex justify-center text-sm font-medium text-dark/70 hover:text-dark/90">
-                                                <span>{section.name}</span>
+                                                <span>
+                                                    {section.name} {section.symbol}
+                                                </span>
                                                 <span className="ml-1.5 rounded-sm bg-dark/20 px-1.5 py-0.5 text-xs font-semibold text-dark/70 tabular-nums">
                                                     {section.options.filter((option) => option.checked).length}
                                                 </span>
