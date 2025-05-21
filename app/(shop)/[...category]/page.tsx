@@ -1,6 +1,8 @@
 import {
     FetchItemShapeDocument,
     SearchCategoryDocument,
+    FetchCategoryExamplesDocument,
+    SortOrder,
     TenantFilter,
     TenantSort,
 } from '@/generated/discovery/graphql';
@@ -19,13 +21,15 @@ import { ENTERTAINMENT_PRICE_RANGE, PRODUCTS_PRICE_RANGE, SORTING_CONFIGS, STOCK
 import { FilterOption, SortingOption } from './types';
 import { notFound } from 'next/navigation';
 
-type FetchCategoryProps = {
+import { Image } from '@/components/image';
+
+interface FetchCategoryProps {
     path: string;
     limit: number;
     skip?: number;
     filters: TenantFilter;
     sorting: TenantSort;
-};
+}
 
 type ItemShape = 'category' | 'product' | null;
 
@@ -50,12 +54,19 @@ const searchCategory = async ({ path, limit, skip = 0, filters, sorting }: Fetch
     });
     const { hits, summary } = response.data.search ?? {};
     const { breadcrumbs, name, blocks, children } = response.data.browse?.category?.hits?.[0] ?? {};
+    const categories = children?.hits?.filter((item) => item?.shape === 'category');
 
+    for (const category of categories) {
+        const productExamples = await apiRequest(FetchCategoryExamplesDocument, {
+            path: `${category.path}/*`,
+        });
+        category.examples = productExamples.data?.search?.hits;
+    }
     return {
         name,
         blocks,
         breadcrumbs: breadcrumbs?.[0]?.filter((item) => !!item),
-        categories: children?.hits?.filter((item) => item?.shape === 'category'),
+        categories,
         products: hits?.filter((item) => item?.shape === 'product'),
         summary,
     };
@@ -170,20 +181,37 @@ export default async function CategoryOrProduct(props: CategoryOrProductProps) {
             <div className="page  pb-6">
                 <Breadcrumbs breadcrumbs={breadcrumbs} />
                 <h1 className="text-4xl font-bold py-4">{name}</h1>
-                {/* Filters */}
-                <Suspense fallback={null}>
-                    <Filters priceRange={priceRangeOptions} sorting={sort} paths={paths} stockOptions={stockOptions} />
-                </Suspense>
             </div>
             {/* Categories List */}
-            <div className={classNames('flex flex-wrap mx-auto gap-x-2 gap-y-2 max-w-(--breakpoint-2xl) px-12')}>
-                {categories?.map((child) => (
-                    // @ts-expect-error
-                    <Link className="bg-dark text-light rounded-full px-4 py-2" href={child?.path} key={child?.id}>
-                        {/*@ts-expect-error*/}
-                        {child?.name}
-                    </Link>
-                ))}
+            <div
+                className={classNames(
+                    'flex flex-wrap border-b border-muted mx-auto pt-4 pb-6 gap-x-4   max-w-(--breakpoint-2xl)',
+                )}
+            >
+                {categories?.map((child) => {
+                    return (
+                        // @ts-expect-error
+                        <Link
+                            className="text-dark flex gap-1  flex-col justify-center  items-center bg-white"
+                            href={child?.path}
+                            key={child?.id}
+                        >
+                            {/*@ts-expect-error*/}
+                            <div className="w-22 h-24 text-center rounded-lg overflow-hidden border border-muted relative">
+                                {child.examples?.map((example) => {
+                                    return (
+                                        <Image
+                                            key={`${example?.defaultVariant?.firstImage?.url}-${example?.name}`}
+                                            {...example?.defaultVariant?.firstImage}
+                                            alt={example?.name}
+                                        />
+                                    );
+                                })}
+                            </div>
+                            <span className="font-medium">{child?.name}</span>
+                        </Link>
+                    );
+                })}
             </div>
 
             {/* Blocks */}
@@ -196,9 +224,20 @@ export default async function CategoryOrProduct(props: CategoryOrProductProps) {
             {/* Products List */}
             <div
                 className={classNames(
-                    'grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-4 max-w-(--breakpoint-2xl) mx-auto my-8',
+                    'grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-4 max-w-(--breakpoint-2xl) mx-auto mb-8 relative',
                 )}
             >
+                <div className="col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4 py-4 bg-soft border-b border-muted ">
+                    {/* Filters */}
+                    <Suspense fallback={null}>
+                        <Filters
+                            priceRange={priceRangeOptions}
+                            sorting={sort}
+                            paths={paths}
+                            stockOptions={stockOptions}
+                        />
+                    </Suspense>
+                </div>
                 {/*@ts-expect-error*/}
                 {products?.map((child) => <Product key={child?.path} product={child} />)}
             </div>

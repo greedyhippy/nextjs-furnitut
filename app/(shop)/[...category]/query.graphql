@@ -61,6 +61,25 @@ query FetchCategory($path: String!, $limit: Int = 25, $skip: Int = 0) {
     }
 }
 
+query FetchCategoryExamples($path: String!) {
+    search(pagination: { limit: 1 }, path: $path, filters: { shape: { equals: "product" } }) {
+        hits {
+            name
+            ... on product {
+                defaultVariant {
+                    firstImage {
+                        url
+                        variants(types: ["avif"], maxWidth: 100) {
+                            url
+                            width
+                            height
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 query SearchCategory(
     $path: String!
     $browsePath: String!
@@ -75,10 +94,7 @@ query SearchCategory(
         path: $path
         pagination: { limit: $limit, skip: $skip }
         facets: {
-            price_default: {
-                boundaries: $boundaries
-                key: "price"
-            }
+            price_default: { boundaries: $boundaries, key: "price" }
             parentPaths: { key: "parentPaths", limit: 10 }
             stock_default: { key: "online", boundaries: $stockBoundaries }
             stock_oslo: { key: "oslo", boundaries: $stockBoundaries }

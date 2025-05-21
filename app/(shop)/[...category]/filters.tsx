@@ -46,7 +46,7 @@ type Filter = {
 const filters: Filter[] = [
     {
         id: 'parentPaths',
-        name: 'Path',
+        name: 'Category',
         options: [],
     },
     {
@@ -225,39 +225,58 @@ export function Filters({ priceRange, sorting, paths, stockOptions }: FiltersPro
                     Filters
                 </h2>
 
-                <div className="border-b border-dark/20 pb-4">
-                    <div className="mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8">
+                <div>
+                    <div className="mx-auto flex items-center justify-between">
                         <Menu as="div" className="relative inline-block text-left">
-                            <div>
-                                <MenuButton className="group inline-flex justify-center text-sm font-medium text-dark/70 hover:text-dark/90">
-                                    Sort
-                                    <ChevronDownIcon
-                                        aria-hidden="true"
-                                        className="-mr-1 ml-1 size-5 shrink-0 text-dark/40 group-hover:text-dark/50"
-                                    />
-                                </MenuButton>
-                            </div>
-
-                            <MenuItems
-                                transition
-                                className="absolute left-0 z-10 mt-2 w-40 origin-top-left rounded-md bg-light shadow-2xl ring-1 ring-dark/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
-                            >
-                                <div className="py-1">
-                                    {sortOptions.map((option) => (
-                                        <MenuItem
-                                            key={option.value}
-                                            as={'span'}
+                            {({ open }) => (
+                                <>
+                                    <div>
+                                        <MenuButton
                                             className={classNames(
-                                                option.value === sorting ? 'font-medium text-dark/90' : 'text-dark/50',
-                                                'block px-4 py-2 text-sm data-focus:bg-dark/10 data-focus:outline-hidden',
+                                                'group cursor-pointer inline-flex justify-center text-sm font-medium text-dark bg-muted px-4 py-2 rounded-full hover:border-dark active:border-dark border',
+                                                open ? 'border-dark' : 'border-transparent',
                                             )}
-                                            onClick={(e) => handleSortingChange(option.value)}
                                         >
-                                            {option.label}
-                                        </MenuItem>
-                                    ))}
-                                </div>
-                            </MenuItems>
+                                            <span className="font-bold">
+                                                {sortOptions.find((options) => options.value === sorting)?.label}
+                                            </span>
+                                            <ChevronDownIcon
+                                                aria-hidden="true"
+                                                className={classNames(
+                                                    '-mr-1 ml-1 size-5 shrink-0 text-dark/40 group-hover:text-dark/50',
+                                                    open ? 'rotate-180' : '',
+                                                )}
+                                            />
+                                        </MenuButton>
+                                    </div>
+
+                                    <MenuItems
+                                        transition
+                                        className="absolute left-0 z-10 mt-2 w-40 origin-top-left rounded-md bg-light shadow-2xl ring-1 ring-dark/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+                                        onChange={(e) => {
+                                            console.log(e);
+                                        }}
+                                    >
+                                        <div className="py-1">
+                                            {sortOptions.map((option) => (
+                                                <MenuItem
+                                                    key={option.value}
+                                                    as={'span'}
+                                                    className={classNames(
+                                                        option.value === sorting
+                                                            ? 'font-medium text-dark/90'
+                                                            : 'text-dark/50',
+                                                        'block cursor-pointer px-4 py-2 text-sm  data-focus:bg-dark/10 data-focus:outline-hidden',
+                                                    )}
+                                                    onClick={(e) => handleSortingChange(option.value)}
+                                                >
+                                                    <span className="font-bold">{option.label}</span>
+                                                </MenuItem>
+                                            ))}
+                                        </div>
+                                    </MenuItems>
+                                </>
+                            )}
                         </Menu>
 
                         <button
@@ -270,82 +289,99 @@ export function Filters({ priceRange, sorting, paths, stockOptions }: FiltersPro
 
                         <div className="hidden sm:block">
                             <div className="flow-root">
-                                <PopoverGroup className="-mx-4 flex items-center divide-x divide-dark/20">
+                                <PopoverGroup className="flex items-center">
                                     {filters.map((section, sectionIdx) => (
-                                        <Popover key={section.name} className="relative inline-block px-4 text-left">
-                                            <PopoverButton className="group inline-flex justify-center text-sm font-medium text-dark/70 hover:text-dark/90">
-                                                <span>
-                                                    {section.name} {section.symbol}
-                                                </span>
-                                                <span className="ml-1.5 rounded-sm bg-dark/20 px-1.5 py-0.5 text-xs font-semibold text-dark/70 tabular-nums">
-                                                    {section.options.filter((option) => option.checked).length}
-                                                </span>
-                                                <ChevronDownIcon
-                                                    aria-hidden="true"
-                                                    className="-mr-1 ml-1 size-5 shrink-0 text-dark/40 group-hover:text-dark/50"
-                                                />
-                                            </PopoverButton>
+                                        <Popover key={section.name} className="relative inline-block px-1 text-left">
+                                            {({ open }) => (
+                                                <>
+                                                    <PopoverButton
+                                                        className={classNames(
+                                                            'group cursor-pointer inline-flex justify-center text-sm font-medium text-dark bg-muted px-4 py-2 rounded-full hover:border-dark active:border-dark border',
+                                                            open ? 'border-dark' : 'border-transparent',
+                                                        )}
+                                                    >
+                                                        <span className="font-bold">
+                                                            {section.name} {section.symbol}
+                                                        </span>
+                                                        <span className="ml-1.5 rounded-sm bg-dark/20 px-1.5 py-0.5 text-xs font-semibold text-dark/70 tabular-nums">
+                                                            {section.options.filter((option) => option.checked).length}
+                                                        </span>
+                                                        <ChevronDownIcon
+                                                            aria-hidden="true"
+                                                            className={classNames(
+                                                                '-mr-1 ml-1 size-5 shrink-0 text-dark/40 group-hover:text-dark/50',
+                                                                open ? 'rotate-180' : '',
+                                                            )}
+                                                        />
+                                                    </PopoverButton>
 
-                                            <PopoverPanel
-                                                transition
-                                                className="absolute right-0 z-10 mt-2 origin-top-right rounded-md bg-light p-4 shadow-2xl ring-1 ring-dark/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
-                                            >
-                                                <form className="space-y-4">
-                                                    {section.options.map((option, optionIdx) => (
-                                                        <div
-                                                            key={option.value}
-                                                            className={classNames('flex gap-3 group', {
-                                                                'cursor-not-allowed text-dark/30': option.count === 0,
-                                                                'text-dark/90': option.count !== 0,
-                                                            })}
-                                                        >
-                                                            <div className="flex h-5 shrink-0 items-center">
-                                                                <div className="group grid size-4 grid-cols-1">
-                                                                    <input
-                                                                        defaultValue={option.value}
-                                                                        defaultChecked={option.checked}
-                                                                        disabled={option.count === 0}
-                                                                        onChange={handleCheckboxChange}
-                                                                        id={`filter-${section.id}-${optionIdx}`}
-                                                                        name={`${section.id}`}
-                                                                        type="checkbox"
-                                                                        className="col-start-1 row-start-1 appearance-none rounded-sm border border-dark/30 bg-light checked:border-accent/60 checked:bg-accent/60 indeterminate:border-accent/60 indeterminate:bg-accent/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent/60 disabled:border-dark/30 disabled:bg-dark/10 disabled:checked:bg-dark/10 forced-colors:appearance-auto"
-                                                                    />
-                                                                    <svg
-                                                                        fill="none"
-                                                                        viewBox="0 0 14 14"
-                                                                        className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-light group-has-disabled:stroke-dark/25"
+                                                    <PopoverPanel
+                                                        transition
+                                                        className="absolute min-w-64 right-0 z-10 mt-2 origin-top-right rounded-md bg-light p-4 shadow-2xl ring-1 ring-dark/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+                                                    >
+                                                        <form className="space-y-4">
+                                                            {section.options.map((option, optionIdx) => (
+                                                                <div
+                                                                    key={option.value}
+                                                                    className={classNames(
+                                                                        'flex gap-3 group cursor-pointer',
+                                                                        {
+                                                                            'cursor-not-allowed text-dark/30':
+                                                                                option.count === 0,
+                                                                            'text-dark/90': option.count !== 0,
+                                                                        },
+                                                                    )}
+                                                                >
+                                                                    <div className="flex h-5 shrink-0 items-center">
+                                                                        <div className="group grid size-4 grid-cols-1">
+                                                                            <input
+                                                                                defaultValue={option.value}
+                                                                                defaultChecked={option.checked}
+                                                                                disabled={option.count === 0}
+                                                                                onChange={handleCheckboxChange}
+                                                                                id={`filter-${section.id}-${optionIdx}`}
+                                                                                name={`${section.id}`}
+                                                                                type="checkbox"
+                                                                                className="col-start-1 row-start-1 appearance-none rounded-sm border border-dark/30 bg-light checked:border-dark checked:bg-dark indeterminate:border-accent/60 indeterminate:bg-accent/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent/60 disabled:border-dark/30 disabled:bg-dark/10 disabled:checked:bg-dark/10 forced-colors:appearance-auto"
+                                                                            />
+                                                                            <svg
+                                                                                fill="none"
+                                                                                viewBox="0 0 14 14"
+                                                                                className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-light group-has-disabled:stroke-dark/25"
+                                                                            >
+                                                                                <path
+                                                                                    d="M3 8L6 11L11 3.5"
+                                                                                    strokeWidth={2}
+                                                                                    strokeLinecap="round"
+                                                                                    strokeLinejoin="round"
+                                                                                    className="opacity-0 group-has-checked:opacity-100"
+                                                                                />
+                                                                                <path
+                                                                                    d="M3 7H11"
+                                                                                    strokeWidth={2}
+                                                                                    strokeLinecap="round"
+                                                                                    strokeLinejoin="round"
+                                                                                    className="opacity-0 group-has-indeterminate:opacity-100"
+                                                                                />
+                                                                            </svg>
+                                                                        </div>
+                                                                    </div>
+                                                                    <label
+                                                                        htmlFor={`filter-${section.id}-${optionIdx}`}
+                                                                        className="pr-6 text-sm font-medium whitespace-nowrap text-dark/90 w-full flex justify-between"
                                                                     >
-                                                                        <path
-                                                                            d="M3 8L6 11L11 3.5"
-                                                                            strokeWidth={2}
-                                                                            strokeLinecap="round"
-                                                                            strokeLinejoin="round"
-                                                                            className="opacity-0 group-has-checked:opacity-100"
-                                                                        />
-                                                                        <path
-                                                                            d="M3 7H11"
-                                                                            strokeWidth={2}
-                                                                            strokeLinecap="round"
-                                                                            strokeLinejoin="round"
-                                                                            className="opacity-0 group-has-indeterminate:opacity-100"
-                                                                        />
-                                                                    </svg>
+                                                                        {option.label?.split('>')?.pop() ||
+                                                                            option.label}
+                                                                        <span className="ml-4 text-dark/50">
+                                                                            {option.count}
+                                                                        </span>
+                                                                    </label>
                                                                 </div>
-                                                            </div>
-                                                            <label
-                                                                htmlFor={`filter-${section.id}-${optionIdx}`}
-                                                                className="pr-6 text-sm font-medium whitespace-nowrap w-full flex justify-between group-disabled:text-dark/30"
-                                                            >
-                                                                {option.label}
-                                                                <span className="ml-4 text-dark/50">
-                                                                    {option.count}
-                                                                </span>
-                                                            </label>
-                                                        </div>
-                                                    ))}
-                                                </form>
-                                            </PopoverPanel>
+                                                            ))}
+                                                        </form>
+                                                    </PopoverPanel>
+                                                </>
+                                            )}
                                         </Popover>
                                     ))}
                                 </PopoverGroup>
