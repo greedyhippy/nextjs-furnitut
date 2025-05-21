@@ -132,8 +132,8 @@ export default async function CategoryProduct(props: ProductsProps) {
     return (
         <>
             <main className="page">
-                <div className="grid grid-cols-12 gap-24 rounded-xl">
-                    <div className="col-span-7">
+                <div className="lg:grid lg:grid-cols-12 lg:gap-24 rounded-xl px-4 lg:px-0">
+                    <div className="lg:col-span-7">
                         <Breadcrumbs breadcrumbs={product.breadcrumbs} />
                         <div className="mt-6 grid grid-cols-2 mb-6 pb-6 gap-4 [&_.img-landscape]:col-span-2">
                             {currentVariant?.images?.map((image, index) => {
@@ -210,7 +210,7 @@ export default async function CategoryProduct(props: ProductsProps) {
                         )}
                     </div>
 
-                    <div className="col-span-5 relative">
+                    <div className="mt-10 lg:mt-0! lg:col-span-5 relative">
                         <div className="flex justify-between items-center ">
                             <span className="text-xs font-bold opacity-50">{currentVariant?.sku}</span>
                             {product.brand && (
