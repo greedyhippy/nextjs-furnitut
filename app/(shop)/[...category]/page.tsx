@@ -14,7 +14,14 @@ import Link from 'next/link';
 import { Filters } from './filters';
 import { ITEMS_PER_PAGE, Pagination } from '@/components/Pagination';
 import { Suspense } from 'react';
-import { buildFilterCriteria } from './utils';
+import {
+    buildFilterCriteria,
+    createAdjacentPairs,
+    createStockFilterOptions,
+    isChecked,
+    ParentPathFacet,
+    StockLocation,
+} from './utils';
 import { ENTERTAINMENT_PRICE_RANGE, PRODUCTS_PRICE_RANGE, SORTING_CONFIGS, STOCK_RANGE } from './constants';
 import { FilterOption, SortingOption } from './types';
 import { notFound } from 'next/navigation';
@@ -33,10 +40,10 @@ type ItemShape = 'category' | 'product' | null;
 
 type SearchParams = {
     page?: string;
-    priceRange?: string;
+    priceRange?: string | string[];
     sort?: SortingOption;
-    parentPath?: string;
-    stock?: string;
+    parentPath?: string | string[];
+    stock?: string | string[];
 };
 
 const searchCategory = async ({ path, limit, skip = 0, filters, sorting }: FetchCategoryProps) => {
@@ -50,7 +57,8 @@ const searchCategory = async ({ path, limit, skip = 0, filters, sorting }: Fetch
         boundaries: path.includes('entertainment') ? ENTERTAINMENT_PRICE_RANGE : PRODUCTS_PRICE_RANGE,
         stockBoundaries: STOCK_RANGE,
     });
-    const { hits, summary } = response.data.search ?? {};
+    const { hits, summary: searchSummary } = response.data.search ?? {};
+    const { summary: filterSummary } = response.data.filters ?? {};
     const { breadcrumbs, name, blocks, children } = response.data.browse?.category?.hits?.[0] ?? {};
 
     return {
@@ -59,7 +67,10 @@ const searchCategory = async ({ path, limit, skip = 0, filters, sorting }: Fetch
         breadcrumbs: breadcrumbs?.[0]?.filter((item) => !!item),
         categories: children?.hits?.filter((item) => item?.shape === 'category'),
         products: hits?.filter((item) => item?.shape === 'product'),
-        summary,
+        summary: {
+            ...searchSummary,
+            ...filterSummary,
+        },
     };
 };
 
@@ -74,17 +85,6 @@ const fetchItemShape = async (path: string): Promise<ItemShape> => {
 
     return itemShape as ItemShape;
 };
-
-function createAdjacentPairs<T>(array: T[]): { value: string; label: string }[] {
-    return array.map((item, index) => {
-        const nextElement = array[index + 1] ?? '+';
-
-        return {
-            value: nextElement === '+' ? `${item}` : `${item},${nextElement}`,
-            label: nextElement === '+' ? `${item}${nextElement}` : `${item}-${nextElement}`,
-        };
-    });
-}
 
 type CategoryOrProductProps = {
     params: Promise<{ slug: string; category: string[] }>;
@@ -118,7 +118,6 @@ export default async function CategoryOrProduct(props: CategoryOrProductProps) {
     });
     const { totalHits, hasPreviousHits, hasMoreHits, price, parentPaths, toronto, online, oslo } = summary ?? {};
 
-    type ParentPathFacet = Record<string, { count: number; label: string; filter: string }>;
     const priceCounts = Object.values(price) as { count: number }[];
     const pairs = createAdjacentPairs(
         path.includes('entertainment') ? ENTERTAINMENT_PRICE_RANGE : PRODUCTS_PRICE_RANGE,
@@ -128,44 +127,29 @@ export default async function CategoryOrProduct(props: CategoryOrProductProps) {
         value: pair.value,
         label: pair.label,
         count: priceCounts[index].count,
-        checked: priceRange === pair.value,
+        checked: isChecked({ filterValue: priceRange, value: pair.value }),
     }));
 
     const paths: FilterOption[] = Object.entries(parentPaths as ParentPathFacet)
         .map(([key, value]) => ({
             value: key,
-            label: value.label,
+            label: value.label.split(' > ').at(-1) as string,
             count: value.count,
-            checked: parentPath === key,
+            checked: isChecked({
+                filterValue: parentPath,
+                value: key,
+            }),
         }))
-        .sort((a, b) => a.value.localeCompare(b.value));
+        .sort((a, b) => a.label.localeCompare(b.label));
 
-    const onlineStock: FilterOption[] = Object.entries(online as ParentPathFacet)
-        .slice(0, 1)
-        .map(([key, value]) => ({
-            value: value.filter,
-            label: 'Online',
-            count: value.count,
-            checked: stock === value.filter,
-        }));
-    const osloStock: FilterOption[] = Object.entries(oslo as ParentPathFacet)
-        .slice(0, 1)
-        .map(([key, value]) => ({
-            value: value.filter,
-            label: 'Oslo',
-            count: value.count,
-            checked: stock === value.filter,
-        }));
-    const torontoStock: FilterOption[] = Object.entries(toronto as ParentPathFacet)
-        .slice(0, 1)
-        .map(([key, value]) => ({
-            value: value.filter,
-            label: 'Toronto',
-            count: value.count,
-            checked: stock === value.filter,
-        }));
+    const stockLocations: StockLocation[] = [
+        { data: online as ParentPathFacet, label: 'Online' },
+        { data: oslo as ParentPathFacet, label: 'Oslo' },
+        { data: toronto as ParentPathFacet, label: 'Toronto' },
+    ];
 
-    const stockOptions = [...onlineStock, ...osloStock, ...torontoStock];
+    const stockOptions = createStockFilterOptions(stockLocations, stock);
+
     return (
         <main>
             <div className="border-muted border-b border-0">
@@ -185,7 +169,6 @@ export default async function CategoryOrProduct(props: CategoryOrProductProps) {
                                 /*@ts-expect-error*/
                                 href={child?.path}
                                 /*@ts-expect-error*/
-
                                 key={child?.id}
                             >
                                 <div className="w-24 h-24 text-center rounded-lg overflow-hidden border border-muted relative ">
@@ -220,7 +203,6 @@ export default async function CategoryOrProduct(props: CategoryOrProductProps) {
             >
                 <div className="col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4 pb-4 mt-4">
                     {/* Filters */}
-
                     <Suspense fallback={null}>
                         <Filters
                             priceRange={priceRangeOptions}

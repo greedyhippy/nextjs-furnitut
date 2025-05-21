@@ -80,9 +80,8 @@ query SearchCategory(
     $boundaries: [Int]!
     $stockBoundaries: [Int]!
 ) {
-    search(
+    filters: search(
         path: $path
-        pagination: { limit: $limit, skip: $skip }
         facets: {
             price_default: { boundaries: $boundaries, key: "price" }
             parentPaths: { key: "parentPaths", limit: 10 }
@@ -90,6 +89,18 @@ query SearchCategory(
             stock_oslo: { key: "oslo", boundaries: $stockBoundaries }
             stock_toronto: { key: "toronto", boundaries: $stockBoundaries }
         }
+    ) {
+        summary {
+            price: facets(key: "price")
+            parentPaths: facets(key: "parentPaths")
+            online: facets(key: "online")
+            oslo: facets(key: "oslo")
+            toronto: facets(key: "toronto")
+        }
+    }
+    search(
+        path: $path
+        pagination: { limit: $limit, skip: $skip }
         filters: $filters
         sorting: $sorting
     ) {
@@ -97,11 +108,6 @@ query SearchCategory(
             totalHits
             hasMoreHits
             hasPreviousHits
-            price: facets(key: "price")
-            parentPaths: facets(key: "parentPaths")
-            online: facets(key: "online")
-            oslo: facets(key: "oslo")
-            toronto: facets(key: "toronto")
         }
         hits {
             name

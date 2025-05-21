@@ -89,7 +89,7 @@ export function Filters({ priceRange, sorting, paths, stockOptions, totalHits }:
         if (value === null) {
             params.delete(key);
         } else {
-            params.set(key, value);
+            params.append(key, value);
         }
         return `${pathname}${params.toString() ? `?${params.toString()}` : ''}`;
     };
