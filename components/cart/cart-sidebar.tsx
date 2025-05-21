@@ -58,7 +58,7 @@ export const CartSidebar = () => {
             <div className="grow h-full  overflow-y-scroll">
                 <CartItems />
             </div>
-            <div className={classNames('flex flex-row my-3 justify-between', { hidden: cart.items.length })}>
+            <div className={classNames('flex flex-row my-3 justify-between', { hidden: !cart.items.length })}>
                 <form className="flex-1" action={handleApplyCoupon}>
                     <label htmlFor={COUPON_CODE_NAME} className="block text-sm/6 font-medium text-dark/70">
                         Coupon code
