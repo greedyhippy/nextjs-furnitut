@@ -1,6 +1,6 @@
 import { NumberFilter, StringFilter, TenantFilter } from '@/generated/discovery/graphql';
 import { PRICE_FIELD } from './constants';
-import { FilterOption } from '@/app/(shop)/[...category]/types';
+import { FilterOption } from './types';
 
 const INFINITY_FALLBACK = Number.NEGATIVE_INFINITY;
 

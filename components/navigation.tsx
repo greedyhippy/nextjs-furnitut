@@ -1,7 +1,7 @@
 import { FetchLayoutDocument, MenuItemFragment } from '@/generated/discovery/graphql';
 import { apiRequest } from '@/utils/api-request';
 import Link from 'next/link';
-import { CommandPalette } from '@/components/SearchBar';
+import { CommandPalette } from '@/components/command-palette';
 
 type NavigationProps = {
     className?: string;

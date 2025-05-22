@@ -13,10 +13,32 @@ import {
 } from '@headlessui/react';
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { apiRequest } from '@/utils/api-request';
 import { GlobalSearchDocument } from '@/generated/discovery/graphql';
 import { debounce } from '@/utils/debounce';
+
+type ImageVariant = {
+    url: string;
+    width: number;
+    height: number;
+};
+
+type FirstImage = {
+    variants: ImageVariant[];
+};
+
+type DefaultVariant = {
+    firstImage: FirstImage;
+    defaultPrice: number;
+};
+
+type Product = {
+    id: string;
+    name: string;
+    path: string;
+    defaultVariant: DefaultVariant;
+};
 
 export function CommandPalette() {
     const [query, setQuery] = useState('');
@@ -43,20 +65,26 @@ export function CommandPalette() {
         };
     }, []);
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const debouncedApiCall = useCallback(
+        debounce(async (term: string) => {
+            console.log({ term });
+
+            const response = await apiRequest(GlobalSearchDocument, { term });
+            const results = response?.data?.search?.hits ?? [];
+
+            setResults(results as Product[]);
+        }, 150),
+        [],
+    );
+
     useEffect(() => {
         if (query === '') {
             return;
         }
-        const debouncedSearch = debounce(async (term: string) => {
-            const response = await apiRequest(GlobalSearchDocument, { term });
-            const results = response?.data?.search?.hits ?? [];
 
-            // @ts-expect-error
-            setResults(results);
-        }, 150);
-
-        debouncedSearch(query);
-    }, [query]);
+        debouncedApiCall(query);
+    }, [debouncedApiCall, query]);
 
     const resetCommandPalette = () => {
         setOpen(false);
@@ -125,7 +153,6 @@ export function CommandPalette() {
                                                     'flex size-10 flex-none items-center justify-center rounded-lg'
                                                 }
                                             >
-                                                {/*<item.icon className="size-6 text-white" aria-hidden="true" />*/}
                                                 <img
                                                     className="aspect-square h-12"
                                                     src={item.defaultVariant.firstImage.variants[0].url}
@@ -166,25 +193,3 @@ export function CommandPalette() {
         </>
     );
 }
-
-type ImageVariant = {
-    url: string;
-    width: number;
-    height: number;
-};
-
-type FirstImage = {
-    variants: ImageVariant[];
-};
-
-type DefaultVariant = {
-    firstImage: FirstImage;
-    defaultPrice: number;
-};
-
-type Product = {
-    id: string;
-    name: string;
-    path: string;
-    defaultVariant: DefaultVariant;
-};

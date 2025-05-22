@@ -1,4 +1,6 @@
 import {
+    Category,
+    Product as ProductShape,
     FetchItemShapeDocument,
     SearchCategoryDocument,
     TenantFilter,
@@ -12,7 +14,7 @@ import ProductPage from '@/components/ProductPage';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { Filters } from './filters';
-import { ITEMS_PER_PAGE, Pagination } from '@/components/Pagination';
+import { ITEMS_PER_PAGE, Pagination } from '@/components/pagination';
 import { Suspense } from 'react';
 import {
     buildFilterCriteria,
@@ -160,27 +162,26 @@ export default async function CategoryOrProduct(props: CategoryOrProductProps) {
                 {/* Categories List */}
                 <div className={classNames('flex flex-wrap mx-auto gap-2  max-w-(--breakpoint-2xl) empty:pb-0 pb-4 ')}>
                     {categories?.map((child) => {
+                        if (!child) {
+                            return null;
+                        }
+
                         return (
                             <Link
                                 className={classNames(
                                     'group w-28 pt-2 text-center text-dark divide divide-black divide-solid hover:border-dark transition-all',
                                     'bg-light border-muted border border-solid rounded-lg  flex flex-col gap-1  justify-start  items-center',
                                 )}
-                                /*@ts-expect-error*/
-                                href={child?.path}
-                                /*@ts-expect-error*/
-                                key={child?.id}
+                                href={(child as Category).id ?? '#'}
+                                key={(child as Category).id}
                             >
                                 <div className="w-24 h-24 text-center rounded-lg overflow-hidden border border-muted relative ">
-                                    {/*@ts-expect-error*/}
-                                    {child.image?.map((img) => {
-                                        /*@ts-expect-error*/
-                                        return <Image {...img} key={`${img?.url}`} alt={child?.name} sizes="200px" />;
+                                    {(child as Category).image?.map((img) => {
+                                        return <Image {...img} key={img?.url} sizes="200px" />;
                                     })}
                                 </div>
                                 <span className="group-hover:font-bold py-2 text-sm text-wrap max-w-full">
-                                    {/*@ts-expect-error*/}
-                                    {child?.name}
+                                    {(child as Category).name}
                                 </span>
                             </Link>
                         );
@@ -213,8 +214,13 @@ export default async function CategoryOrProduct(props: CategoryOrProductProps) {
                         />
                     </Suspense>
                 </div>
-                {/*@ts-expect-error*/}
-                {products?.map((child) => <Product key={child?.path} product={child} />)}
+                {products?.map((child) => {
+                    if (!child) {
+                        return null;
+                    }
+
+                    return <Product key={(child as ProductShape).id} product={child} />;
+                })}
             </div>
 
             {/* Pagination */}
