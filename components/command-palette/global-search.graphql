@@ -1,0 +1,28 @@
+query GlobalSearch($term: String!) {
+    search(
+        term: $term
+        options: { fuzzy: { fuzziness: SINGLE } }
+        filters: { type_in: [product] }
+    ) {
+        summary {
+            totalHits
+        }
+        hits {
+            id
+            name
+            path
+            ... on Product {
+                defaultVariant {
+                    firstImage {
+                        variants(maxWidth: 100, types: ["avif"]) {
+                            url
+                            height
+                            width
+                        }
+                    }
+                    defaultPrice
+                }
+            }
+        }
+    }
+}

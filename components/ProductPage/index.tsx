@@ -17,8 +17,8 @@ import { AddToCartButton } from '@/components/cart/add-to-cart-button';
 import { ParagraphCollection } from '@/components/paragraph-collection';
 
 type ProductsProps = {
-    searchParams: Promise<Record<string, string>>;
-    params: Promise<{ slug: string; category: string; product: string }>;
+    searchParams: Promise<{ page?: string }>;
+    params: Promise<{ slug: string; category: string[] }>;
 };
 
 const fetchData = async (path: string) => {
@@ -38,7 +38,7 @@ const fetchData = async (path: string) => {
 export async function generateMetadata(props: ProductsProps): Promise<Metadata> {
     const searchParams = await props.searchParams;
     const params = await props.params;
-    const url = `/${params.slug}/${params.category}/${params.product}`;
+    const url = `/${params.category.join('/')}`;
     const { meta, variants } = await fetchData(url);
     const currentVariant = findSuitableVariant({ variants: variants, searchParams });
 
@@ -70,7 +70,7 @@ export async function generateMetadata(props: ProductsProps): Promise<Metadata> 
 export default async function CategoryProduct(props: ProductsProps) {
     const searchParams = await props.searchParams;
     const params = await props.params;
-    const url = `/${params.slug}/${params.category}/${params.product}`;
+    const url = `/${params.category.join('/')}`;
     const product = await fetchData(url);
     const currentVariant = findSuitableVariant({ variants: product.variants, searchParams });
     const dimensions = currentVariant?.dimensions;
@@ -132,8 +132,8 @@ export default async function CategoryProduct(props: ProductsProps) {
     return (
         <>
             <main className="page">
-                <div className="grid grid-cols-12 gap-24 rounded-xl">
-                    <div className="col-span-7">
+                <div className="lg:grid lg:grid-cols-12 lg:gap-24 rounded-xl px-4 lg:px-0">
+                    <div className="lg:col-span-7">
                         <Breadcrumbs breadcrumbs={product.breadcrumbs} />
                         <div className="mt-6 grid grid-cols-2 mb-6 pb-6 gap-4 [&_.img-landscape]:col-span-2">
                             {currentVariant?.images?.map((image, index) => {
@@ -210,7 +210,7 @@ export default async function CategoryProduct(props: ProductsProps) {
                         )}
                     </div>
 
-                    <div className="col-span-5 relative">
+                    <div className="mt-10 lg:mt-0! lg:col-span-5 relative">
                         <div className="flex justify-between items-center ">
                             <span className="text-xs font-bold opacity-50">{currentVariant?.sku}</span>
                             {product.brand && (

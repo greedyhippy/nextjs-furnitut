@@ -1,12 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import classNames from 'classnames';
 
 import { CartItems } from './cart-items';
 import { Price } from '../price';
 import { useCart } from './cart-provider';
 import { Badge } from '@/components/badge';
+import classNames from 'classnames';
 
 const COUPON_CODE_NAME = 'voucher-code';
 

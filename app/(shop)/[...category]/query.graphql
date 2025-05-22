@@ -1,0 +1,524 @@
+query FetchCategory($path: String!, $limit: Int = 25, $skip: Int = 0) {
+    browse {
+        category(path: $path, pagination: { limit: $limit, skip: $skip }) {
+            hits {
+                name
+                breadcrumbs {
+                    name
+                    path
+                    id
+                }
+                blocks {
+                    ...categoryBlocks
+                }
+                children {
+                    hits {
+                        shape
+                        ... on category {
+                            id
+                            name
+                            path
+                            image {
+                                url
+                                altText
+                                variants(maxWidth: 200, types: ["avif"]) {
+                                    url
+                                    width
+                                    height
+                                }
+                            }
+                        }
+                        ... on product {
+                            id
+                            name
+                            path
+                            description(format: json)
+                            defaultVariant {
+                                sku
+                                defaultPrice: priceVariants(key: "default")
+                                firstImage {
+                                    url
+                                    altText
+                                    focalPoint
+                                    variants(maxWidth: 500, types: ["avif"]) {
+                                        url
+                                        width
+                                        height
+                                    }
+                                }
+                            }
+                            variants {
+                                sku
+                                isDefault
+                                name
+                                firstImage {
+                                    url
+                                    altText
+                                    focalPoint
+                                    variants(maxWidth: 100, types: ["avif"]) {
+                                        url
+                                        width
+                                        height
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+query SearchCategory(
+    $path: String!
+    $browsePath: String!
+    $limit: Int!
+    $skip: Int = 0
+    $filters: TenantFilter
+    $sorting: TenantSort
+    $boundaries: [Int]!
+    $stockBoundaries: [Int]!
+) {
+    filters: search(
+        path: $path
+        facets: {
+            price_default: { boundaries: $boundaries, key: "price" }
+            parentPaths: { key: "parentPaths", limit: 10 }
+            stock_default: { key: "online", boundaries: $stockBoundaries }
+            stock_oslo: { key: "oslo", boundaries: $stockBoundaries }
+            stock_toronto: { key: "toronto", boundaries: $stockBoundaries }
+        }
+    ) {
+        summary {
+            price: facets(key: "price")
+            parentPaths: facets(key: "parentPaths")
+            online: facets(key: "online")
+            oslo: facets(key: "oslo")
+            toronto: facets(key: "toronto")
+        }
+    }
+    search(
+        path: $path
+        pagination: { limit: $limit, skip: $skip }
+        filters: $filters
+        sorting: $sorting
+    ) {
+        summary {
+            totalHits
+            hasMoreHits
+            hasPreviousHits
+        }
+        hits {
+            name
+            shape
+            ... on product {
+                id
+                name
+                path
+                description(format: json)
+                defaultVariant {
+                    sku
+                    defaultPrice: priceVariants(key: "default")
+                    firstImage {
+                        url
+                        altText
+                        focalPoint
+                        variants(maxWidth: 500, types: ["avif"]) {
+                            url
+                            width
+                            height
+                        }
+                    }
+                }
+                variants {
+                    sku
+                    isDefault
+                    name
+                    firstImage {
+                        url
+                        altText
+                        focalPoint
+                        variants(maxWidth: 100, types: ["avif"]) {
+                            url
+                            width
+                            height
+                        }
+                    }
+                }
+            }
+        }
+    }
+    browse {
+        category(path: $browsePath) {
+            hits {
+                name
+                breadcrumbs {
+                    name
+                    path
+                    id
+                }
+                blocks {
+                    storySlider {
+                        title
+                        description
+                        stories {
+                            items {
+                                ... on story {
+                                    path
+                                    title
+                                    intro
+                                    media {
+                                        image {
+                                            url
+                                            altText
+                                            focalPoint
+                                            variants {
+                                                url
+                                                width
+                                                height
+                                            }
+                                        }
+                                        shoppableImage {
+                                            url
+                                            altText
+                                            focalPoint
+                                            variants {
+                                                url
+                                                width
+                                                height
+                                            }
+                                        }
+                                        video {
+                                            thumbnails {
+                                                url
+                                                altText
+                                                variants {
+                                                    width
+                                                    height
+                                                    url
+                                                }
+                                            }
+                                            title
+                                            playlists
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        layout {
+                            displayWidth
+                            theme
+                            backgroundMedia {
+                                image {
+                                    url
+                                    altText
+                                    focalPoint
+                                    variants {
+                                        url
+                                        width
+                                        height
+                                    }
+                                }
+                                video {
+                                    playlists
+                                    thumbnails {
+                                        url
+                                        altText
+                                        caption
+                                        meta
+                                        focalPoint
+                                        createdAt
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    banner {
+                        title
+                        description
+                        layout {
+                            displayWidth
+                            theme
+                            backgroundMedia {
+                                image {
+                                    url
+                                    altText
+                                    focalPoint
+                                    variants {
+                                        url
+                                        width
+                                        height
+                                    }
+                                }
+                                video {
+                                    playlists
+                                    thumbnails {
+                                        url
+                                        altText
+                                        caption
+                                        meta
+                                        focalPoint
+                                        createdAt
+                                    }
+                                }
+                            }
+                        }
+                        banner {
+                            url
+                            altText
+                            focalPoint
+                            variants {
+                                url
+                                width
+                                height
+                            }
+                            showcases {
+                                hotspot
+                                items {
+                                    name
+                                    path
+                                    ... on product {
+                                        defaultVariant {
+                                            defaultPrice: priceVariants(key: "default")
+                                            firstImage {
+                                                url
+                                                variants(maxWidth: 200, types: ["avif"]) {
+                                                    width
+                                                    url
+                                                    height
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                variants {
+                                    name
+                                    product {
+                                        path
+                                    }
+                                    defaultPrice: priceVariants(key: "default")
+                                    firstImage {
+                                        url
+                                        variants(maxWidth: 200, types: ["avif"]) {
+                                            width
+                                            url
+                                            height
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        callToAction {
+                            action {
+                                label
+                                url
+                            }
+                        }
+                    }
+                    featureHighlights {
+                        layout {
+                            displayWidth
+                            theme
+                            backgroundMedia {
+                                image {
+                                    url
+                                    altText
+                                    focalPoint
+                                    variants {
+                                        url
+                                        width
+                                        height
+                                    }
+                                }
+                                video {
+                                    playlists
+                                    thumbnails {
+                                        url
+                                        altText
+                                        caption
+                                        meta
+                                        focalPoint
+                                        createdAt
+                                    }
+                                }
+                            }
+                        }
+                        usp {
+                            headline
+                            description
+                            icon {
+                                url
+                                altText
+                                focalPoint
+                                variants {
+                                    url
+                                    width
+                                    height
+                                }
+                            }
+                        }
+                    }
+                    productSlider {
+                        title
+                        description
+                        products {
+                            variants {
+                                sku
+                                name
+                                defaultPrice: priceVariants(key: "default")
+                                firstImage {
+                                    url
+                                    variants(width: 500, types: ["avif"]) {
+                                        url
+                                        width
+                                        height
+                                    }
+                                }
+                                product {
+                                    path
+                                }
+                            }
+                            items {
+                                itemId
+                            }
+                        }
+                        layout {
+                            displayWidth
+                            theme
+                            backgroundMedia {
+                                image {
+                                    url
+                                    altText
+                                    focalPoint
+                                    variants {
+                                        url
+                                        width
+                                        height
+                                    }
+                                }
+                                video {
+                                    playlists
+                                    thumbnails {
+                                        url
+                                        altText
+                                        caption
+                                        meta
+                                        focalPoint
+                                        createdAt
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    pictureGrid {
+                        title
+                        description
+                        images {
+                            url
+                            altText
+                            focalPoint
+                            variants {
+                                url
+                                width
+                                height
+                            }
+                            showcases {
+                                hotspot
+                                items {
+                                    name
+                                    path
+                                    ... on product {
+                                        defaultVariant {
+                                            defaultPrice: priceVariants(key: "default")
+                                            firstImage {
+                                                url
+                                                variants(maxWidth: 200, types: ["avif"]) {
+                                                    width
+                                                    url
+                                                    height
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                variants {
+                                    name
+                                    product {
+                                        path
+                                    }
+                                    defaultPrice: priceVariants(key: "default")
+                                    firstImage {
+                                        url
+                                        variants(maxWidth: 200, types: ["avif"]) {
+                                            width
+                                            url
+                                            height
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        layout {
+                            displayWidth
+                            theme
+                            backgroundMedia {
+                                image {
+                                    url
+                                    altText
+                                    focalPoint
+                                    variants {
+                                        url
+                                        width
+                                        height
+                                    }
+                                }
+                                video {
+                                    playlists
+                                    thumbnails {
+                                        url
+                                        altText
+                                        caption
+                                        meta
+                                        focalPoint
+                                        createdAt
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                children {
+                    hits {
+                        shape
+                        ... on category {
+                            id
+                            name
+                            path
+                            image {
+                                url
+                                altText
+                                variants(maxWidth: 200, types: ["avif"]) {
+                                    url
+                                    width
+                                    height
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+query FetchItemShape($path: String!) {
+    search(path: $path) {
+        hits {
+            id
+            name
+            path
+            shape
+        }
+    }
+}
