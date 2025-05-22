@@ -172,7 +172,7 @@ export default async function CategoryOrProduct(props: CategoryOrProductProps) {
                                     'group w-28 pt-2 text-center text-dark divide divide-black divide-solid hover:border-dark transition-all',
                                     'bg-light border-muted border border-solid rounded-lg  flex flex-col gap-1  justify-start  items-center',
                                 )}
-                                href={(child as Category).id ?? '#'}
+                                href={(child as Category).path ?? '#'}
                                 key={(child as Category).id}
                             >
                                 <div className="w-24 h-24 text-center rounded-lg overflow-hidden border border-muted relative ">
