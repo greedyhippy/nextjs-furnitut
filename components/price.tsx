@@ -12,5 +12,5 @@ export const Price = ({ price }: PriceProps) => {
         currency: price?.currency || 'EUR',
     });
 
-    return <>{formatter.format(price.price)}</>;
+    return formatter.format(price.price);
 };

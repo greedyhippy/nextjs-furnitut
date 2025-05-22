@@ -78,7 +78,6 @@ const searchCategory = async ({ path, limit, skip = 0, filters, sorting }: Fetch
 
 const fetchItemShape = async (path: string): Promise<ItemShape> => {
     const response = await apiRequest(FetchItemShapeDocument, { path });
-
     const itemShape = response?.data?.search?.hits?.[0]?.shape;
 
     if (!itemShape) {
@@ -99,7 +98,7 @@ export default async function CategoryOrProduct(props: CategoryOrProductProps) {
     const currentPage = Number(page ?? 1);
     const limit = ITEMS_PER_PAGE;
     const skip = currentPage ? (currentPage - 1) * limit : 0;
-    const path = `/${params.category.join('/')}`;
+    let path = `/${params.category.join('/')}`;
 
     const itemShape = await fetchItemShape(path);
     if (!itemShape) {
