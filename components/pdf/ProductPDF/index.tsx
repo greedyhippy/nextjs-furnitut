@@ -48,11 +48,11 @@ type ProductPDFProps = {
     name: string;
 };
 export const ProductPDF = ({ product }: { product: ProductPDFProps }) => {
-    const { story, variants, brand, decriptionPlain } = product;
+    const { story, variants, brand, decriptionPlain, details } = product;
     const logoUrl = brand?.logo?.[0]?.url;
     const logoIsSvg = logoUrl?.endsWith('.svg');
     return (
-        <Document>
+        <Document title={`${product.name} | ${brand.name}`} author="Furnitut" subject="Product PDF">
             <Page style={styles.indexPage}>
                 {variants?.[0]?.images?.[0]?.url && <Image style={styles.image} src={variants[0]?.images[0].url} />}
                 <View style={styles.productDescriptionContainer}>
@@ -75,7 +75,6 @@ export const ProductPDF = ({ product }: { product: ProductPDFProps }) => {
                         color: '#211a1d',
                         marginTop: 20,
                         marginBottom: 10,
-                        backgroundColor: '#000',
                     }}
                 >
                     {!logoIsSvg && <Image src={logoUrl} style={{ width: 50, height: 50, objectFit: 'contain' }} />}
@@ -126,7 +125,24 @@ export const ProductPDF = ({ product }: { product: ProductPDFProps }) => {
                         </Page>
                     );
                 })}
-            <Page style={styles.tablePage}>
+            {details?.length > 0 && (
+                <Page style={{ ...styles.indexPage, padding: 48 }}>
+                    {details.map((detail, detailIndex) => {
+                        return (
+                            <View
+                                key={`details-paragraph-${detailIndex}`}
+                                style={{ flexDirection: 'row', gap: 10, paddingBottom: 24 }}
+                            >
+                                <Text style={{ width: '30%', fontSize: 10, fontWeight: 700 }}>{detail.title}</Text>
+                                <View style={{ width: '70%' }}>
+                                    <ContentTransformer json={detail.description} overrides={overrides} />
+                                </View>
+                            </View>
+                        );
+                    })}
+                </Page>
+            )}
+            <Page style={styles.tablePage} wrap>
                 <View style={styles.table}>
                     {variants.map((variant, i) => {
                         const { dimensions } = variant;
@@ -139,6 +155,7 @@ export const ProductPDF = ({ product }: { product: ProductPDFProps }) => {
                                 }}
                             >
                                 <View
+                                    break={true}
                                     style={{
                                         ...styles.tableRow,
                                     }}
@@ -181,15 +198,17 @@ export const ProductPDF = ({ product }: { product: ProductPDFProps }) => {
                                         paddingLeft: 60,
                                     }}
                                 >
-                                    {Object.keys(variant.attributes).map((key) => (
-                                        <View
-                                            style={{ flexDirection: 'row', gap: 10 }}
-                                            key={`attribute-value-${variant.sku}-${key}`}
-                                        >
-                                            <Text style={{ width: '50%' }}>{key}</Text>
-                                            <Text>{variant.attributes[key]}</Text>
-                                        </View>
-                                    ))}
+                                    {Object.keys(variant.attributes).map((key) => {
+                                        return (
+                                            <View
+                                                style={{ flexDirection: 'row', gap: 10 }}
+                                                key={`attribute-value-${variant.sku}-${key}`}
+                                            >
+                                                <Text style={{ width: '50%' }}>{key}</Text>
+                                                <Text>{variant.attributes[key]}</Text>
+                                            </View>
+                                        );
+                                    })}
 
                                     {dimensions && (
                                         <>
