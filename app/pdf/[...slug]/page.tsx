@@ -3,7 +3,7 @@ import { fetchProductDataForPDF } from '@/components/pdf/utils';
 type PDFProps = {
     params: Promise<{ slug: string[] }>;
 };
-export const PDF = async ({ params }: PDFProps) => {
+export default async function PDFPage({ params }: PDFProps) {
     const { slug } = await params;
     slug.pop();
     const path = `/${slug.join('/')}`;
@@ -24,6 +24,4 @@ export const PDF = async ({ params }: PDFProps) => {
             </PDFViewer>
         </div>
     );
-};
-
-export default PDF;
+}
