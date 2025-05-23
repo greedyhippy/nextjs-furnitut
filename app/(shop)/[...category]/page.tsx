@@ -98,7 +98,7 @@ export default async function CategoryOrProduct(props: CategoryOrProductProps) {
     const currentPage = Number(page ?? 1);
     const limit = ITEMS_PER_PAGE;
     const skip = currentPage ? (currentPage - 1) * limit : 0;
-    let path = `/${params.category.join('/')}`;
+    const path = `/${params.category.join('/')}`;
 
     const itemShape = await fetchItemShape(path);
     if (!itemShape) {

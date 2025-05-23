@@ -4,7 +4,7 @@ import { Page, Text, View, Document, Link, Image } from '@react-pdf/renderer';
 import { ContentTransformer, NodeContent } from '@crystallize/reactjs-components';
 import { styles } from './styles';
 import { Price } from '@/components/price';
-import { Brand, Paragraph, Product, ProductVariant } from '@/generated/discovery/graphql';
+import { Brand, Paragraph, ProductVariant } from '@/generated/discovery/graphql';
 
 const overrides = {
     link: (props: any) => (
@@ -39,16 +39,30 @@ const overrides = {
         </Text>
     ),
 };
-type ProductPDFProps = {
+
+type ExtendedProductVariant = ProductVariant & {
+    dimensions?: {
+        depth: number;
+        depthUnit: string;
+        height: number;
+        heightUnit: string;
+        width: number;
+        widthUnit: string;
+        weight: number;
+        weightUnit: string;
+    };
+};
+
+export type ProductPDFProps = {
     story: Paragraph[];
-    variants: ProductVariant[];
+    variants: ExtendedProductVariant[];
     brand: Brand;
-    decriptionPlain: string;
+    descriptionPlain: string;
     name: string;
     details: any[];
 };
 export const ProductPDF = ({ product }: { product: ProductPDFProps }) => {
-    const { story, variants, brand, decriptionPlain, details } = product;
+    const { story, variants, brand, descriptionPlain, details } = product;
     const logoUrl = brand?.logo?.[0]?.url;
     const logoIsSvg = logoUrl?.endsWith('.svg');
 
@@ -59,12 +73,14 @@ export const ProductPDF = ({ product }: { product: ProductPDFProps }) => {
                 <View style={styles.productDescriptionContainer}>
                     <Text style={styles.title}>{product.name}</Text>
                     <Text style={styles.productDescription}>
-                        {!!decriptionPlain?.length &&
-                            (decriptionPlain?.length < 152 ? decriptionPlain : `${decriptionPlain?.slice(0, 152)} ...`)}
+                        {!!descriptionPlain?.length &&
+                            (descriptionPlain?.length < 152
+                                ? descriptionPlain
+                                : `${descriptionPlain?.slice(0, 152)} ...`)}
                     </Text>
 
                     <Text style={styles.price}>
-                        {variants?.[0].defaultPrice && <Price price={variants?.[0].defaultPrice} />}
+                        {variants?.[0].defaultPrice && <Price price={variants?.[0].defaultPrice as unknown as Price} />}
                     </Text>
                 </View>
                 <View
@@ -78,7 +94,9 @@ export const ProductPDF = ({ product }: { product: ProductPDFProps }) => {
                         marginBottom: 10,
                     }}
                 >
-                    {!logoIsSvg && <Image src={logoUrl} style={{ width: 50, height: 50, objectFit: 'contain' }} />}
+                    {!logoIsSvg && logoUrl && (
+                        <Image src={logoUrl} style={{ width: 50, height: 50, objectFit: 'contain' }} />
+                    )}
                 </View>
             </Page>
 
@@ -99,20 +117,26 @@ export const ProductPDF = ({ product }: { product: ProductPDFProps }) => {
                                             paddingRight: 48,
                                         }}
                                     >
-                                        {images?.map((img, imgIndex) => (
-                                            <Image
-                                                key={`story-paragraph-#${storyIndex}-image-#${imgIndex}-${img.url}`}
-                                                src={img.url}
-                                                style={{
-                                                    width: '100%',
-                                                    maxWidth: images.length > 1 ? `${100 / images.length}%` : '50%',
-                                                    height: '100%',
-                                                    borderRadius: 12,
-                                                    overflow: 'hidden',
-                                                    objectFit: 'cover',
-                                                }}
-                                            />
-                                        ))}
+                                        {images?.map((img, imgIndex) => {
+                                            if (!img?.url) {
+                                                return null;
+                                            }
+
+                                            return (
+                                                <Image
+                                                    key={`story-paragraph-#${storyIndex}-image-#${imgIndex}-${img.url}`}
+                                                    src={img.url}
+                                                    style={{
+                                                        width: '100%',
+                                                        maxWidth: images.length > 1 ? `${100 / images.length}%` : '50%',
+                                                        height: '100%',
+                                                        borderRadius: 12,
+                                                        overflow: 'hidden',
+                                                        objectFit: 'cover',
+                                                    }}
+                                                />
+                                            );
+                                        })}
                                     </View>
                                 )}
 
@@ -161,7 +185,9 @@ export const ProductPDF = ({ product }: { product: ProductPDFProps }) => {
                                         ...styles.tableRow,
                                     }}
                                 >
-                                    <Image style={styles.tableCellImage} src={variant?.images![0]?.url} />
+                                    {variant?.images?.[0]?.url && (
+                                        <Image style={styles.tableCellImage} src={variant.images[0].url} />
+                                    )}
                                     <View
                                         style={{
                                             ...styles.tableCellName,
@@ -187,7 +213,7 @@ export const ProductPDF = ({ product }: { product: ProductPDFProps }) => {
                                         }}
                                     >
                                         <Text style={{ fontSize: 10, fontWeight: 600 }}>
-                                            <Price price={variant.defaultPrice} />
+                                            <Price price={variant.defaultPrice as unknown as Price} />
                                         </Text>
                                     </View>
                                 </View>

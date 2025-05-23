@@ -1,18 +1,7 @@
 import { StyleSheet } from '@react-pdf/renderer';
 
-// --color-*: initial;
-// --color-transparent: transparent;
-// --color-dark: #211a1d;
-// --color-light: #ffffff;
-// --color-soft: #f6f4f3;
-// --color-accent: #79745d;
-// --color-muted: #dfdfdf;
-// --color-vivid: #ee7674;
-
 export const styles = StyleSheet.create({
     productPage: {
-        // flexDirection: 'row',
-        // fontFamily: 'Helvetica',
         backgroundColor: '#f6f4f3',
     },
     indexPage: {
@@ -61,12 +50,10 @@ export const styles = StyleSheet.create({
         textAlign: 'left',
     },
     productName: {
-        // fontWeight: 'bold',
         fontSize: 16,
         marginBottom: 10,
     },
     productPrice: {
-        // fontWeight: 'bold',
         fontSize: 12,
     },
     table: {

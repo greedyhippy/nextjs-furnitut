@@ -1,5 +1,7 @@
+export type Price = { price: number; currency?: string };
+
 type PriceProps = {
-    price?: { price: number; currency?: string } | null;
+    price?: Price | null;
 };
 
 export const Price = ({ price }: PriceProps) => {

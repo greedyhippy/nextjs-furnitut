@@ -4,7 +4,8 @@ type PDFProps = {
 export default async function PDFPage({ params }: PDFProps) {
     const { slug } = await params;
     slug.pop();
-    const pdfUrl = `/api/pdf?path=${encodeURIComponent(slug)}`;
+    const path = slug.join('/');
+    const pdfUrl = `/api/pdf?path=${encodeURIComponent(path)}`;
 
     return (
         <div style={{ height: '100vh' }}>

@@ -6,8 +6,6 @@ export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
     // If the path ends with .pdf, log or handle it
     if (pathname.endsWith('.pdf')) {
-        console.log('Detected a PDF route:', pathname);
-
         request.nextUrl.pathname = `/pdf${pathname.replace(/\.pdf$/, '/pdf')}`;
         return NextResponse.rewrite(request.nextUrl);
     }

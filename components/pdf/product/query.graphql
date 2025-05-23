@@ -6,7 +6,7 @@ query FetchProductForPDF($path: String!) {
                 name
                 path
                 description(format: json)
-                decriptionPlain: description(format: plainText)
+                descriptionPlain: description(format: plainText)
                 details {
                     title
                     description

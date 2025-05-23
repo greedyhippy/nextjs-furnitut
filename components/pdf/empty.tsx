@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Page, Text, View, Document } from '@react-pdf/renderer';
+import { Page, Text, Document } from '@react-pdf/renderer';
 
 export const EmptyPDF = () => {
     return (
