@@ -103,7 +103,7 @@ export async function generateMetadata(props: CategoryOrProductProps): Promise<M
         const { meta, variants } = await fetchProductData(url);
         const currentVariant = findSuitableVariant({ variants: variants, searchParams });
         const title = currentVariant?.name ?? '';
-        const description = meta?.description[0].textContent;
+        const description = meta?.description?.[0]?.textContent;
         const image = currentVariant?.images?.[0];
         const ogImage = image?.ogVariants?.[0];
         const attributesQueryParams = new URLSearchParams(currentVariant?.attributes ?? {});
