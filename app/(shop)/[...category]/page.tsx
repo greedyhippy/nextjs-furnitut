@@ -1,7 +1,8 @@
 import {
     Category,
-    Product as ProductShape,
     FetchItemShapeDocument,
+    Product as ProductShape,
+    PublicationState,
     SearchCategoryDocument,
     TenantFilter,
     TenantSort,
@@ -38,11 +39,12 @@ interface FetchCategoryProps {
     skip?: number;
     filters: TenantFilter;
     sorting: TenantSort;
+    isPreview?: boolean;
 }
 
 type ItemShape = 'category' | 'product' | null;
 
-const searchCategory = async ({ path, limit, skip = 0, filters, sorting }: FetchCategoryProps) => {
+const searchCategory = async ({ path, limit, skip = 0, filters, sorting, isPreview = false }: FetchCategoryProps) => {
     const response = await apiRequest(SearchCategoryDocument, {
         path: `${path}/*`,
         browsePath: path,
@@ -52,13 +54,12 @@ const searchCategory = async ({ path, limit, skip = 0, filters, sorting }: Fetch
         sorting,
         boundaries: path.includes('entertainment') ? ENTERTAINMENT_PRICE_RANGE : PRODUCTS_PRICE_RANGE,
         stockBoundaries: STOCK_RANGE,
+        publicationState: isPreview ? PublicationState.Draft : PublicationState.Published,
     });
 
     const { hits, summary: searchSummary } = response.data.search ?? {};
     const { summary: filterSummary } = response.data.filters ?? {};
     const { breadcrumbs, name, blocks, children, meta } = response.data.browse?.category?.hits?.[0] ?? {};
-
-
 
     return {
         name,
@@ -101,7 +102,7 @@ export async function generateMetadata(props: CategoryOrProductProps): Promise<M
     const itemShape = await fetchItemShape(url);
 
     if (itemShape === 'product') {
-        const { meta, variants } = await fetchProductData(url);
+        const { meta, variants } = await fetchProductData({ path: url });
         const currentVariant = findSuitableVariant({ variants: variants, searchParams });
         const title = currentVariant?.name ?? '';
         const description = meta?.description?.[0]?.textContent;
@@ -158,7 +159,7 @@ export async function generateMetadata(props: CategoryOrProductProps): Promise<M
 
 export default async function CategoryOrProduct(props: CategoryOrProductProps) {
     const params = await props.params;
-    const { page, priceRange, sort = 'popular', parentPath, stock } = await props.searchParams;
+    const { page, priceRange, sort = 'popular', parentPath, stock, preview } = await props.searchParams;
     const currentPage = Number(page ?? 1);
     const limit = ITEMS_PER_PAGE;
     const skip = currentPage ? (currentPage - 1) * limit : 0;
@@ -180,6 +181,7 @@ export default async function CategoryOrProduct(props: CategoryOrProductProps) {
         skip,
         filters: buildFilterCriteria({ priceRange, parentPath, stock }),
         sorting: SORTING_CONFIGS[sort] as TenantSort,
+        isPreview: !!preview,
     });
     const { totalHits, hasPreviousHits, hasMoreHits, price, parentPaths, toronto, online, oslo } = summary ?? {};
 

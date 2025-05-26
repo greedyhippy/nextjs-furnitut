@@ -1,6 +1,6 @@
-query FetchProduct($path: String!) {
+query FetchProduct($path: String!, $publicationState: [PublicationState]) {
     browse {
-        product(path: $path) {
+        product(path: $path, publicationState: $publicationState) {
             hits {
                 name
                 path

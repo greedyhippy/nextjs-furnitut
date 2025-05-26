@@ -7,6 +7,7 @@ query SearchCategory(
     $sorting: TenantSort
     $boundaries: [Int]!
     $stockBoundaries: [Int]!
+    $publicationState: [PublicationState]
 ) {
     filters: search(
         path: $path
@@ -28,6 +29,7 @@ query SearchCategory(
     }
     search(
         path: $path
+        publicationState: $publicationState
         pagination: { limit: $limit, skip: $skip }
         filters: $filters
         sorting: $sorting
@@ -78,7 +80,7 @@ query SearchCategory(
         }
     }
     browse {
-        category(path: $browsePath) {
+        category(path: $browsePath, publicationState: $publicationState) {
             hits {
                 name
                 breadcrumbs {
