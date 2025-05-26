@@ -58,6 +58,8 @@ const searchCategory = async ({ path, limit, skip = 0, filters, sorting }: Fetch
     const { summary: filterSummary } = response.data.filters ?? {};
     const { breadcrumbs, name, blocks, children, meta } = response.data.browse?.category?.hits?.[0] ?? {};
 
+
+
     return {
         name,
         blocks,
@@ -127,7 +129,7 @@ export async function generateMetadata(props: CategoryOrProductProps): Promise<M
         };
     }
 
-    const { meta } = await searchCategory({
+    const { meta, name } = await searchCategory({
         path: url,
         limit,
         skip,
@@ -137,7 +139,7 @@ export async function generateMetadata(props: CategoryOrProductProps): Promise<M
     const { title, description, image } = meta ?? {};
 
     return {
-        title,
+        title: title || name,
         description: description?.[0].textContent ?? '',
         openGraph: {
             title: `${title} | Furnitut`,
