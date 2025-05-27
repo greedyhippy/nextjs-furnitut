@@ -2,7 +2,7 @@ import { print } from 'graphql';
 
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 
-const apiEndpoint = `https://api.crystallize.com/${process.env.NEXT_PUBLIC_CRYSTALLIZE_TENANT_IDENTIFIER}/discovery`;
+const apiEndpoint = `https://api.crystallize.com/${process.env.CRYSTALLIZE_TENANT_IDENTIFIER}/discovery`;
 
 export const apiRequest = async <TResult, TVariables = {}>(
     query: TypedDocumentNode<TResult, TVariables>,
@@ -16,8 +16,10 @@ export const apiRequest = async <TResult, TVariables = {}>(
         body: JSON.stringify({ query: print(query), variables }),
     });
 
+    
     if (!response.ok) {
-        throw new Error();
+
+        throw new Error(response.statusText);
     }
 
     const result = await response.json();
