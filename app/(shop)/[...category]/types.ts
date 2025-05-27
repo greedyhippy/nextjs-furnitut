@@ -14,4 +14,5 @@ export type SearchParams = {
     parentPath?: string | string[];
     stock?: string | string[];
     sku?: string | string[];
+    preview?: string;
 };

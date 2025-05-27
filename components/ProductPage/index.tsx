@@ -3,12 +3,12 @@ import Link from 'next/link';
 import schemas from 'schema-dts';
 import { ContentTransformer } from '@crystallize/reactjs-components';
 
-import { FetchProductDocument, Paragraph } from '@/generated/discovery/graphql';
+import { FetchProductDocument, Paragraph, PublicationState } from '@/generated/discovery/graphql';
 import { apiRequest } from '@/utils/api-request';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { Price } from '@/components/price';
 import { Image } from '@/components/image';
-import { VariantSelector, findSuitableVariant } from '@/components/variant-selector';
+import { findSuitableVariant, VariantSelector } from '@/components/variant-selector';
 import { Slider } from '@/components/slider';
 import { Product } from '@/components/product';
 import { Accordion } from '@/components/accordion';
@@ -21,8 +21,11 @@ type ProductsProps = {
     params: Promise<{ slug: string; category: string[] }>;
 };
 
-export const fetchProductData = async (path: string) => {
-    const response = await apiRequest(FetchProductDocument, { path });
+export const fetchProductData = async ({ path, isPreview = false }: { path: string; isPreview?: boolean }) => {
+    const response = await apiRequest(FetchProductDocument, {
+        path,
+        publicationState: isPreview ? PublicationState.Draft : PublicationState.Published,
+    });
     const { story, variants, brand, breadcrumbs, meta, ...product } = response.data.browse?.product?.hits?.[0] ?? {};
 
     return {
@@ -39,7 +42,7 @@ export default async function CategoryProduct(props: ProductsProps) {
     const searchParams = await props.searchParams;
     const params = await props.params;
     const url = `/${params.category.join('/')}`;
-    const product = await fetchProductData(url);
+    const product = await fetchProductData({ path: url, isPreview: !!searchParams.preview });
     const currentVariant = findSuitableVariant({ variants: product.variants, searchParams });
     const dimensions = currentVariant?.dimensions;
     // TODO: this should be for how long the price will be valid
