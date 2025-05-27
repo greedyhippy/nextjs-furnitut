@@ -5,7 +5,8 @@ import { CartProvider } from '@/components/cart/cart-provider';
 import './globals.css';
 import { apiRequest } from '@/utils/api-request';
 import { FrontPageMetadataDocument } from '@/generated/discovery/graphql';
-import { Footer } from '@/components/footer';
+import Script from 'next/script';
+
 const manrope = Manrope({ subsets: ['latin'], display: 'swap' });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -56,6 +57,7 @@ export default async function Layout({ children }: LayoutProps) {
             </head>
             <body className={`${manrope.className} bg-soft`}>
                 <CartProvider>{children}</CartProvider>
+                <Script src="/scripts/frontend-preview-listener.js" />
             </body>
         </html>
     );
