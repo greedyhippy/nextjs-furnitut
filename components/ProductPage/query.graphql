@@ -13,6 +13,15 @@ query FetchProduct($path: String!, $publicationState: [PublicationState]) {
                     name
                     path
                 }
+                downloads {
+                    title
+                    description
+                    files {
+                        url
+                        createdAt
+                        title
+                    }
+                }
                 brand {
                     items {
                         id

@@ -18,7 +18,7 @@ export default async function Checkout() {
                 <h1 className="text-xl font-bold">Checkout</h1>
             </header>
 
-            <main className="page max-w-(--breakpoint-xl)!">
+            <main className="page max-w-(--breakpoint-xl)! min-h-screen">
                 <CheckoutForm />
             </main>
         </>
