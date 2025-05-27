@@ -55,12 +55,11 @@ export const Image = ({
             })}
         >
             <CrystallizeImage
-                {...image}
                 url={image.url ?? undefined}
                 variants={image.variants as CrystallizeImageVariants}
                 alt={altText ?? undefined}
                 loading={loading}
-                sizes={sizes ?? '(max-width: 640px) 500w, 768w'}
+                sizes={sizes ?? '(max-width: 640px) 500w, 1280w'}
                 className={className}
             />
             {showShowcases && (

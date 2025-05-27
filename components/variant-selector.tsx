@@ -75,14 +75,16 @@ type VariantSelectorProps = {
 
 export const VariantSelector = (props: VariantSelectorProps) => {
     const { searchParams, path } = props;
+
     const variants = props.variants?.reduce<ProductVariantFragment[]>((acc, item) => {
         const variant = item as ProductVariantFragment | null;
         !!variant && acc.push(variant);
         return acc;
     }, []);
 
-    const hasAttributeSelector = variants?.every((variant) => variant?.attributes !== null);
-
+    const hasAttributeSelector = variants?.every(
+        (variant) => variant?.attributes !== null && Object.keys(variant.attributes).length > 0,
+    );
     if (!hasAttributeSelector) {
         // Variants are not using attributes
         const currentSku = searchParams.sku;

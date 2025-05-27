@@ -22,7 +22,6 @@ export const Banner = ({ block }: BannerProps) => {
                         {...image}
                         showcases={image.showcases as Showcase[]}
                         className="rounded-3xl overflow-hidden"
-                        preserveRatio
                         showShowcases
                         sizes={'(max-width: 640px) 500w, (max-width: 1024px) 1024w, 1920w'}
                     />
