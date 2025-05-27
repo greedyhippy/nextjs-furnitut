@@ -60,8 +60,6 @@ export default async function AccountPage(props: OrdersPageProps) {
         identifier: session.user.email,
     });
 
-    console.log(customer);
-
     // get the grandparent
     if (customer.customer?.parents?.[0].identifier) {
         markets.push(customer.customer?.parents[0].identifier);
@@ -73,8 +71,6 @@ export default async function AccountPage(props: OrdersPageProps) {
             markets.push(grandParentCustomer.customer?.parents[0].identifier);
         }
     }
-
-    console.log(JSON.stringify(markets));
 
     if (markets.length) {
         console.info('we need to set customer markets');
