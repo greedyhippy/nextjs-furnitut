@@ -57,8 +57,6 @@ const searchCategory = async ({ path, limit, skip = 0, filters, sorting, isPrevi
         publicationState: isPreview ? PublicationState.Draft : PublicationState.Published,
     });
 
-    console.log(response);
-
     const { hits, summary: searchSummary } = response.data.search ?? {};
     const { summary: filterSummary } = response.data.filters ?? {};
     const { breadcrumbs, name, blocks, children, meta } = response.data.browse?.category?.hits?.[0] ?? {};
