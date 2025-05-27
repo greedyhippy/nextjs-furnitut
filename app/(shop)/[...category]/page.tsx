@@ -140,10 +140,10 @@ export async function generateMetadata(props: CategoryOrProductProps): Promise<M
 
     return {
         title: title || name,
-        description: description?.[0].textContent ?? '',
+        description: description?.[0]?.textContent ?? '',
         openGraph: {
             title: `${title} | Furnitut`,
-            description: description?.[0].textContent ?? '',
+            description: description?.[0]?.textContent ?? '',
             url: `/${url}`,
             images: [
                 {

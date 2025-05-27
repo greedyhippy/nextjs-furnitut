@@ -7,7 +7,7 @@ import { FetchProductDocument, Paragraph, PublicationState } from '@/generated/d
 import { apiRequest } from '@/utils/api-request';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { Price } from '@/components/price';
-import { Image } from '@/components/image';
+import { Image as CrystallizeImage } from '@/components/image';
 import { findSuitableVariant, VariantSelector } from '@/components/variant-selector';
 import { Slider } from '@/components/slider';
 import { Product } from '@/components/product';
@@ -15,6 +15,9 @@ import { Accordion } from '@/components/accordion';
 import { AddToCartButton } from '@/components/cart/add-to-cart-button';
 import { ParagraphCollection } from '@/components/paragraph-collection';
 import { SearchParams } from '@/app/(shop)/[...category]/types';
+import downloadIcon from '@/assets/icon-download.svg';
+
+import Image from 'next/image';
 
 type ProductsProps = {
     searchParams: Promise<SearchParams>;
@@ -109,7 +112,7 @@ export default async function CategoryProduct(props: ProductsProps) {
                         <div className="mt-6 grid grid-cols-2 mb-6 pb-6 gap-4 [&_.img-landscape]:col-span-2">
                             {currentVariant?.images?.map((image, index) => {
                                 return (
-                                    <Image
+                                    <CrystallizeImage
                                         key={index}
                                         {...image}
                                         preserveRatio
@@ -123,11 +126,13 @@ export default async function CategoryProduct(props: ProductsProps) {
                                 );
                             })}
                         </div>
-                        <Accordion defaultOpen className="py-8" title="Product">
-                            <div className="text-lg leading-10 font-normal">
-                                <ParagraphCollection paragraphs={product.story} />
-                            </div>
-                        </Accordion>
+                        {product.story && (
+                            <Accordion defaultOpen className="py-8" title="Product">
+                                <div className="text-lg leading-10 font-normal">
+                                    <ParagraphCollection paragraphs={product.story} />
+                                </div>
+                            </Accordion>
+                        )}
 
                         {product.details && (
                             <Accordion title="Details" defaultOpen className="py-8">
@@ -179,6 +184,57 @@ export default async function CategoryProduct(props: ProductsProps) {
                                 </div>
                             </Accordion>
                         )}
+                        {product.downloads && (
+                            <Accordion title="Downloads" defaultOpen className="py-8">
+                                <div className="">
+                                    {product.downloads.map((download, index) => {
+                                        if (!download) return null;
+                                        return (
+                                            <div key={index} className="py-6  border-b mb-6 border-muted gap-x-8">
+                                                <span className="px-1 text-lg mb-2 font-bold">{download.title}</span>
+                                                <span className="px-1 block">
+                                                    <ContentTransformer json={download.description} />
+                                                </span>
+                                                <div className="flex flex-col gap-y-2 pt-4">
+                                                    {download.files?.map((file, fileIndex) => {
+                                                        if (!file || !file.url) return null;
+                                                        const uploadDate = new Date(file.createdAt);
+                                                        const formattedDate = uploadDate.toLocaleDateString('en-US', {
+                                                            year: 'numeric',
+                                                            month: 'long',
+                                                            day: 'numeric',
+                                                        });
+                                                        return (
+                                                            <div
+                                                                key={fileIndex}
+                                                                className="flex justify-between text-dark font-medium border border-muted bg-light pl-6 pr-3 py-3 rounded-xl"
+                                                            >
+                                                                <span className="flex flex-col">
+                                                                    <span className="font-bold">{file.title}</span>
+                                                                    <span className="text-sm">{formattedDate}</span>
+                                                                </span>
+                                                                <a
+                                                                    href={file.url}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    download={file.title}
+                                                                    className="bg-dark rounded-xl h-12 w-12 flex items-center justify-center hover:bg-dark/80 transition-colors"
+                                                                >
+                                                                    <Image
+                                                                        src={downloadIcon}
+                                                                        alt={`Download ${file.title}`}
+                                                                    />
+                                                                </a>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </Accordion>
+                        )}
                     </div>
 
                     <div className="mt-10 lg:mt-0! lg:col-span-5 relative">
@@ -187,7 +243,11 @@ export default async function CategoryProduct(props: ProductsProps) {
                             {product.brand && (
                                 <span className="w-16 h-10 flex items-center">
                                     {'logo' in product.brand ? (
-                                        <Image className="object-contain" preserveRatio {...product.brand.logo?.[0]} />
+                                        <CrystallizeImage
+                                            className="object-contain"
+                                            preserveRatio
+                                            {...product.brand.logo?.[0]}
+                                        />
                                     ) : (
                                         product.brand.name
                                     )}
@@ -249,7 +309,7 @@ export default async function CategoryProduct(props: ProductsProps) {
                                             >
                                                 <div className="flex items-center gap-4">
                                                     <div className="w-10 h-12 rounded-sm overflow-hidden">
-                                                        <Image {...product?.firstImage} />
+                                                        <CrystallizeImage {...product?.firstImage} />
                                                     </div>
                                                     <div className="flex flex-col">
                                                         {!!product?.product?.path && (
@@ -291,17 +351,19 @@ export default async function CategoryProduct(props: ProductsProps) {
                     </div>
                 </div>
             </main>
-            <div className="mt-24 border-t border-muted">
-                <div className="px-12  max-w-(--breakpoint-2xl) pt-24  mx-auto ">
-                    <h2 className="text-2xl py-4 font-bold">Related products</h2>
+            {product?.relatedProducts && (
+                <div className="mt-24 border-t border-muted">
+                    <div className=" max-w-(--breakpoint-2xl) pt-24  mx-auto ">
+                        <h2 className="text-2xl py-4 font-bold">Related products</h2>
 
-                    <Slider type="product" options={{ loop: false, align: 'start' }}>
-                        {product?.relatedProducts?.items?.map((item, index) =>
-                            !!item && 'path' in item ? <Product product={item} key={index} /> : null,
-                        )}
-                    </Slider>
+                        <Slider type="product" options={{ loop: false, align: 'start' }}>
+                            {product?.relatedProducts?.items?.map((item, index) =>
+                                !!item && 'path' in item ? <Product product={item} key={index} /> : null,
+                            )}
+                        </Slider>
+                    </div>
                 </div>
-            </div>
+            )}
 
             <script
                 type="application/ld+json"
