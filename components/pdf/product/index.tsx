@@ -93,14 +93,14 @@ export const ProductPDF = ({ product }: { product: ProductPDFProps }) => {
                             }}
                         />
                     </Text>
-                    <Text style={styles.priceLineThrough}>
-                        <Price
-                            price={{
-                                price: defaultVariantPrice.highest,
-                                currency: defaultVariantPrice.currency,
-                            }}
-                        />
-                    </Text>
+                    {/*<Text style={styles.priceLineThrough}>*/}
+                    {/*    <Price*/}
+                    {/*        price={{*/}
+                    {/*            price: defaultVariantPrice.highest,*/}
+                    {/*            currency: defaultVariantPrice.currency,*/}
+                    {/*        }}*/}
+                    {/*    />*/}
+                    {/*</Text>*/}
                 </View>
                 <View
                     style={{
@@ -245,14 +245,14 @@ export const ProductPDF = ({ product }: { product: ProductPDFProps }) => {
                                                 }}
                                             />
                                         </Text>
-                                        <Text style={{ fontSize: 9, fontWeight: 400, textDecoration: 'line-through' }}>
-                                            <Price
-                                                price={{
-                                                    price: currentVariantPrice.highest,
-                                                    currency: currentVariantPrice.currency,
-                                                }}
-                                            />
-                                        </Text>
+                                        {/*<Text style={{ fontSize: 9, fontWeight: 400, textDecoration: 'line-through' }}>*/}
+                                        {/*    <Price*/}
+                                        {/*        price={{*/}
+                                        {/*            price: currentVariantPrice.highest,*/}
+                                        {/*            currency: currentVariantPrice.currency,*/}
+                                        {/*        }}*/}
+                                        {/*    />*/}
+                                        {/*</Text>*/}
                                     </View>
                                 </View>
                                 <View
