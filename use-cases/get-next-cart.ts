@@ -64,6 +64,9 @@ export const getNextCart = ({ cart, cartItem, action, itemIndex }: GetNextCartPr
                     product: {
                         name: cartItem.productName,
                     },
+                    compareAtPrice: {
+                        gross: cartItem.price.gross
+                    }
                 },
             };
             updatedCart.items.push(optimisticItem);
