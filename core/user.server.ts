@@ -24,13 +24,13 @@ export const getMarkets = async (identifier: string) => {
 
   // get the grandparent
   if (customer.customer?.parents?.[0].identifier) {
-    markets.push(customer.customer?.parents[0].identifier);
+    markets.push(customer.customer?.parents[0].identifier?.toLowerCase());
     const grandParentCustomer = await crystallizeClient.nextPimApi(CUSTOMER_QUERY, {
       identifier: customer.customer.parents[0].identifier,
     });
 
     if (grandParentCustomer.customer?.parents?.[0].identifier) {
-      markets.push(grandParentCustomer.customer?.parents[0].identifier);
+      markets.push(grandParentCustomer.customer?.parents[0].identifier?.toLowerCase());
     }
   }
 
