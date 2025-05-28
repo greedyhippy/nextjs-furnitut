@@ -2,6 +2,7 @@ import { Image } from '@/components/image';
 import { Price } from '@/components/price';
 import { crystallizeClient } from '@/core/crystallize-client.server';
 import { createOrderFetcher, type Order } from '@crystallize/js-api-client';
+import { pipeline } from 'stream';
 
 const fetchData = async (orderId: string) => {
     const response = await createOrderFetcher(crystallizeClient).byId(

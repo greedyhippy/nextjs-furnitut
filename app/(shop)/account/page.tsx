@@ -4,6 +4,7 @@ import { createOrderFetcher, type Order } from '@crystallize/js-api-client';
 import { crystallizeClient } from '@/core/crystallize-client.server';
 import { Price } from '@/components/price';
 import { Image } from '@/components/image';
+import { pipeline } from 'stream';
 
 const formatDate = (incomingDate: string) => {
     const date = new Date(incomingDate);
@@ -88,6 +89,7 @@ export default async function AccountPage(props: OrdersPageProps) {
                     <h1 className="font-medium">Orders</h1>
                     {orders?.orders.map((item) => {
                         const order = item as Order & { reference: string; createdAt: string };
+                        console.log('order', order);
                         return (
                             <details
                                 key={order.id}

@@ -3,11 +3,11 @@
 @theme {
     --color-*: initial;
     --color-transparent: transparent;
-    --color-dark: #211a1d;
+    --color-dark: #0a2e3c;
     --color-light: #ffffff;
-    --color-soft: #f6f4f3;
-    --color-accent: #79745d;
-    --color-muted: #dfdfdf;
+    --color-soft: #ececec;
+    --color-accent: #0091d3;
+    --color-muted: #ececec;
     --color-vivid: #ee7674;
 }
 
