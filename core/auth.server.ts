@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { createMailer } from './mail-server.server';
 import { redirect } from 'next/navigation';
+import { getMarkets } from './user.server';
 
 const secretKey = 'secret';
 const key = new TextEncoder().encode(secretKey);
@@ -55,8 +56,10 @@ export async function verifyToken(token: string) {
             return { error: 'expired-token' };
         }
 
+        const markets = await getMarkets(payload.user.email)
+
         const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-        const session = await encrypt({ user: payload.user, expires });
+        const session = await encrypt({ markets, user: payload.user, expires });
         (await cookies()).set('session', session, { expires, httpOnly: true });
         redirect('/account');
     } catch (error) {

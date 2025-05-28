@@ -16,6 +16,7 @@ import { AddToCartButton } from '@/components/cart/add-to-cart-button';
 import { ParagraphCollection } from '@/components/paragraph-collection';
 import { SearchParams } from '@/app/(shop)/[...category]/types';
 import downloadIcon from '@/assets/icon-download.svg';
+import { getSession } from '@/core/auth.server';
 
 import Image from 'next/image';
 import classNames from 'classnames';
@@ -30,12 +31,14 @@ type ProductsProps = {
 };
 
 export const fetchProductData = async ({ path, isPreview = false }: { path: string; isPreview?: boolean }) => {
+    const session = await getSession();
+
     const response = await apiRequest(FetchProductDocument, {
         path,
         publicationState: isPreview ? PublicationState.Draft : PublicationState.Published,
         selectedPrice: CRYSTALLIZE_SELECTED_PRICE!,
         basePrice: CRYSTALLIZE_BASE_PRICE!,
-        marketIdentifiers: CRYSTALLIZE_MARKETS_PRICE!,
+        marketIdentifiers: session?.markets,
     });
     const { story, variants, brand, breadcrumbs, meta, ...product } = response.data.browse?.product?.hits?.[0] ?? {};
 

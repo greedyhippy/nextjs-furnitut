@@ -46,7 +46,6 @@ type OrdersPageProps = { searchParams: Promise<{ error?: string }> };
 export default async function AccountPage(props: OrdersPageProps) {
     const searchParams = await props.searchParams;
     const session = await getSession();
-    const markets = [] as string[];
 
     if (!session) {
         return (
@@ -59,29 +58,6 @@ export default async function AccountPage(props: OrdersPageProps) {
     const customer = await crystallizeClient.nextPimApi(CUSTOMER_QUERY, {
         identifier: session.user.email,
     });
-
-    // get the grandparent
-    if (customer.customer?.parents?.[0].identifier) {
-        markets.push(customer.customer?.parents[0].identifier);
-        const grandParentCustomer = await crystallizeClient.nextPimApi(CUSTOMER_QUERY, {
-            identifier: customer.customer.parents[0].identifier,
-        });
-
-        if (grandParentCustomer.customer?.parents?.[0].identifier) {
-            markets.push(grandParentCustomer.customer?.parents[0].identifier);
-        }
-    }
-
-    if (markets.length) {
-        console.info('we need to set customer markets');
-        // await fetch('/api/markets', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({ markets }),
-        // });
-    }
 
     const orders = await createOrderFetcher(crystallizeClient).byCustomerIdentifier(
         session.user.email,

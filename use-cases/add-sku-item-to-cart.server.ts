@@ -2,6 +2,7 @@ import { storage } from '@/core/storage.server';
 import { crystallizeClient } from '@/core/crystallize-client.server';
 import { HydrateCartDocument } from '@/generated/shop/graphql';
 import { print } from 'graphql';
+import { getSession } from '@/core/auth.server';
 
 const { CRYSTALLIZE_MARKETS_PRICE, CRYSTALLIZE_SELECTED_PRICE, CRYSTALLIZE_BASE_PRICE } = process.env;
 
@@ -32,6 +33,8 @@ type HydrateCartProps = {
 };
 
 export const hydrateCart = async ({ id, items, voucherCode }: HydrateCartProps) => {
+    const session = await getSession();
+
     const input: CartInput = {
         items,
         context: {
@@ -41,7 +44,7 @@ export const hydrateCart = async ({ id, items, voucherCode }: HydrateCartProps) 
                 fallbackVariantIdentifiers: CRYSTALLIZE_BASE_PRICE,
                 compareAtVariantIdentifier: CRYSTALLIZE_BASE_PRICE,
                 selectedVariantIdentifier: CRYSTALLIZE_SELECTED_PRICE,
-                markets: CRYSTALLIZE_MARKETS_PRICE as unknown as string[],
+                markets: session?.markets
             },
         },
     };
