@@ -12,19 +12,26 @@ export function middleware(request: NextRequest) {
 
     // If basic auth is enabled, check the request headers
     if (BASIC_AUTH && BASIC_USER && BASIC_PASSWORD) {
-        // If the request is not authenticated, ask the user to log in
-        if (!basicAuth) {
-            url.pathname = '/api/auth';
-            return NextResponse.rewrite(url);
+        // If the request is authenticated, let the user continue
+        if (basicAuth) {
+            const authValue = basicAuth.split(' ')[1];
+            const [user, pwd] = atob(authValue).split(':');
+
+            // If the user is authenticated, allow the request to continue
+            if (user === BASIC_USER && pwd === BASIC_PASSWORD) {
+                // If the path ends with .pdf, handle it
+                if (url.pathname.endsWith('.pdf')) {
+                    url.pathname = `/pdf${url.pathname.replace(/\.pdf$/, '/pdf')}`;
+                    return NextResponse.rewrite(url);
+                }
+
+                return NextResponse.next();
+            }
         }
 
-        const authValue = basicAuth.split(' ')[1];
-        const [user, pwd] = atob(authValue).split(':');
-
-        // If the user is authenticated, allow the request to continue
-        if (user === BASIC_USER && pwd === BASIC_PASSWORD) {
-            return NextResponse.next();
-        }
+        // If the request is not authenticated, ask for credentials
+        url.pathname = '/api/auth';
+        return NextResponse.rewrite(url);
     }
 
     // If the path ends with .pdf, handle it
