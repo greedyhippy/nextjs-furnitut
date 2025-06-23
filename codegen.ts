@@ -1,7 +1,7 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
 import { getIntrospectionQuery, buildClientSchema } from 'graphql/utilities';
 
-const SHOP_API_BASE_URL = `https://shop-api-staging.crystallize-edge.workers.dev`;
+const SHOP_API_BASE_URL = `https://shop-api.crystallize.com`;
 const TENANT_IDENTIFIER = process.env.CRYSTALLIZE_TENANT_IDENTIFIER;
 const TOKEN_ID = process.env.CRYSTALLIZE_ACCESS_TOKEN_ID;
 const TOKEN_SECRET = process.env.CRYSTALLIZE_ACCESS_TOKEN_SECRET;
