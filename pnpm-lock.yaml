@@ -18,8 +18,8 @@ importers:
         specifier: ^4.2.0
         version: 4.2.0(stripe@17.7.0)(zod@3.24.2)
       '@crystallize/reactjs-components':
-        specifier: ^2.1.0
-        version: 2.1.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        specifier: ^3.0
+        version: 3.0.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@dintero/checkout-web-sdk':
         specifier: ^0.8.12
         version: 0.8.18
@@ -243,8 +243,8 @@ packages:
       stripe: '*'
       zod: '*'
 
-  '@crystallize/reactjs-components@2.1.0':
-    resolution: {integrity: sha512-OKLYiHhhsxf8OO1Tv/5JGIXTcrb7jj+ljsO60/XiZE38KUJ14qnhI30yFuv8G6Z9s6KFtnhLpTDweeTdswtR2Q==}
+  '@crystallize/reactjs-components@3.0.1':
+    resolution: {integrity: sha512-jE/pv8lUNhW8itJP8aLekQntwEE92i7YdrET3iD0h7fw4DPM7QIIik+IvGPq4pcrGdjOtetaVDmG5l9cfzjI+A==}
     peerDependencies:
       react: '*'
       react-dom: '*'
@@ -3757,7 +3757,7 @@ snapshots:
       - encoding
       - supports-color
 
-  '@crystallize/reactjs-components@2.1.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@crystallize/reactjs-components@3.0.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@crystallize/js-api-client': 4.3.0
       react: 19.0.0
