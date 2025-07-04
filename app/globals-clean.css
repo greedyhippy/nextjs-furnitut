@@ -1,0 +1,42 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@layer base {
+    :root {
+        --color-dark: #211a1d;
+        --color-light: #ffffff;
+        --color-soft: #f6f4f3;
+        --color-accent: #79745d;
+        --color-muted: #dfdfdf;
+        --color-vivid: #ee7674;
+    }
+
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: rgb(229 231 235);
+    }
+}
+
+@layer components {
+    .btn {
+        @apply inline-block px-6 py-3 text-white bg-gray-900 rounded-lg font-medium hover:bg-gray-700;
+    }
+
+    .btn-small {
+        @apply px-4 py-1.5;
+    }
+
+    .btn-large {
+        @apply px-8 py-4;
+    }
+}
+
+@layer utilities {
+    .page {
+        @apply max-w-7xl mx-auto px-0 pt-32;
+    }
+}

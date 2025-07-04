@@ -1,64 +1,44 @@
+/**
+ * Root Layout for Norko Infrared Heaters E-commerce Site
+ * 
+ * This is the main layout that wraps all pages in the application.
+ * It provides the basic HTML structure and includes global styles.
+ */
+
 import type { Metadata } from 'next';
 import { Manrope } from 'next/font/google';
-import { CartProvider } from '@/components/cart/cart-provider';
-
 import './globals.css';
-import { apiRequest } from '@/utils/api-request';
-import { FrontPageMetadataDocument } from '@/generated/discovery/graphql';
-import Script from 'next/script';
 
-const manrope = Manrope({ subsets: ['latin'], display: 'swap' });
+const manrope = Manrope({ 
+  subsets: ['latin'], 
+  display: 'swap',
+  variable: '--font-manrope'
+});
 
-export async function generateMetadata(): Promise<Metadata> {
-    const { data } = await apiRequest(FrontPageMetadataDocument);
+export const metadata: Metadata = {
+  title: {
+    default: 'Norko Infrared Heaters',
+    template: '%s | Norko'
+  },
+  description: 'Premium infrared heating solutions for homes, offices, and commercial spaces.',
+  keywords: ['infrared heaters', 'heating', 'energy efficient', 'Norko', 'premium heating'],
+  authors: [{ name: 'Norko Team' }],
+  creator: 'Norko',
+  metadataBase: new URL(process.env.CANONICAL_URL ?? 'http://localhost:3000'),
+};
 
-    const meta = data.browse?.landingPage?.hits?.[0]?.meta;
-    const title = meta?.title ?? '';
-    const description = meta?.description[0].textContent;
-    const image = meta?.image?.[0];
-    const baseUrl = new URL(process.env.CANONICAL_URL ?? 'http://localhost:3000');
-
-    return {
-        title: {
-            default: title,
-            template: '%s | Furnitut',
-            absolute: `${title} | Furnitut`,
-        },
-        alternates: {
-            canonical: baseUrl,
-        },
-        metadataBase: baseUrl,
-        description,
-        creator: 'Crystallize Team',
-        openGraph: {
-            title: `${title} | Furnitut`,
-            description,
-            images: [
-                {
-                    url: image?.url ?? '',
-                    alt: image?.altText ?? '',
-                    height: image?.height ?? 0,
-                    width: image?.width ?? 0,
-                },
-            ],
-        },
-    };
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en" className={manrope.variable}>
+      <body className={`${manrope.className} antialiased`}>
+        {children}
+      </body>
+    </html>
+  );
 }
 
-type LayoutProps = { children: React.ReactNode };
 
-export default async function Layout({ children }: LayoutProps) {
-    return (
-        <html lang="en">
-            <head>
-                <meta charSet="utf-8" />
-                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                <link rel="icon" href="/favicon.ico" />
-            </head>
-            <body className={`${manrope.className} bg-soft`}>
-                <CartProvider>{children}</CartProvider>
-                <Script src="/scripts/frontend-preview-listener.js" />
-            </body>
-        </html>
-    );
-}
